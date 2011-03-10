@@ -1,0 +1,53 @@
+<html>
+	<head>
+		<style type="text/css">
+			body{
+				background:#333;
+			}
+			#container, #header{
+				width:980px;
+				margin:0px auto; 
+			}
+			#container{
+				background:#eee; 
+				border-radius:5px;
+				-moz-border-radius:5px;
+			}
+			#leftPanel{
+				width:400px;
+				height:300px;
+				border:2px solid #000; 
+				float:left;
+				margin:12px 0px 12px 12px;
+			}
+			#rightPanel{
+				width:536px;
+				height:300px;
+				border:2px solid #000; 
+				float:left;
+				margin:12px 0px 12px 12px;
+			}
+			
+		</style>
+		<script type="text/javascript" src="js/raphael.min.js"></script>
+		<script type="text/javascript" src="js/raphael.slider.js"></script>
+		<script type="text/javascript" src="js/flow/solver.js"></script>
+		<script type="text/javascript" src="js/flight.js"></script>
+		<script type="text/javascript">
+			window.onload= function(){
+				displayFlowSolver("leftPanel");
+				drawControls("bottomPanel");
+				drawSky("rightPanel",536,300);
+			}
+		</script>
+	</head>
+	<body>
+		<div id=header><img src="logo.png"></div>
+		<div id=container>
+			<canvas id="leftPanel"></canvas>
+			<div id=rightPanel></div>
+			<div id=bottomPanel></div>
+			<div style="clear:both"></div>
+		</div>
+	</body>
+</html>

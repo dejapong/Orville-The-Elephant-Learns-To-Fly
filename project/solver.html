@@ -1,0 +1,94 @@
+<html>
+<body style="background:#ccc;">
+<canvas id="canvas" style="width:450px;height:320px;"></canvas> 
+<div id="alpha"><span id=alphaText>Alpha: 0</span></div>
+<div id="speed"><span id=speedText>Speed: 0.1</span></div>
+<div id="viscosity"><span id=viscText>Viscosity: 0.0</span></div>
+<div id="density"><span id=densText>Density: 0.2</span></div>
+<div id="rakeSpacing"><span id=spaceText>Rake Spacing: 2</span></div>
+<script type="text/javascript" src="js/flow/solver.js"></script>
+<script type="text/javascript" src="js/raphael.min.js"></script>
+<script type="text/javascript" src="js/raphael.slider.js"></script>
+<script type="text/javascript">
+	var width = 128; 
+	var height = 80;
+	var solver = Solver(width,height); 
+	
+	var canvas = document.getElementById("canvas"); 
+	var ctx = canvas.getContext("2d"); 
+	
+	canvas.width = width;
+	canvas.height = height;
+
+	var imageData = ctx.createImageData(width,height);
+	
+	setInterval(function(){
+		solver.tick();
+		var rho = solver.getDensity(); 
+		var walls = solver.getWalls(); 
+		
+		for (i = 0, il = (width)*(height)*4 ; i < il; i += 4){
+			var index = i/4;
+			if (walls[index] != 1){	
+				imageData.data[i] = rho[index]*1000;
+				imageData.data[i+1] = rho[index]*1000;
+				imageData.data[i+2] = rho[index]*1000;
+				imageData.data[i+3] = 255;
+			}else{
+				imageData.data[i] = 255;
+				imageData.data[i+1] = 255;
+				imageData.data[i+2] = 0;
+				imageData.data[i+3] = 255;
+			}
+		}
+	ctx.putImageData(imageData,0,0);	
+	},10);
+	
+	new Raphael.fn.slider("alpha",{
+		min:-90,
+		max:90,
+		initial:0,
+		callback:function(value){
+			solver.setAlpha(value);
+			document.getElementById("alphaText").innerHTML = "Alpha: " + Math.round(value*100)/100; 
+		}
+	});
+	new Raphael.fn.slider("speed",{
+		min:0,
+		max:0.5,
+		initial:0.2, 
+		callback:function(value){
+			solver.setSpeed(value);
+			document.getElementById("speedText").innerHTML = "Speed: " + Math.round(value*100)/100; 
+		}
+	});
+	new Raphael.fn.slider("viscosity",{
+		min:0,
+		max:0.1,
+		initial:0.0,
+		callback:function(value){
+			solver.setViscosity(value);
+			document.getElementById("viscText").innerHTML = "Viscosity: " + Math.round(value*100)/100; 
+		}
+	});
+	new Raphael.fn.slider("density",{
+		min:0.1,
+		max:1,
+		initial:0.2,
+		callback:function(value){
+			solver.setDensity(value);
+			document.getElementById("densText").innerHTML = "Density: " + Math.round(value*100)/100; 
+		}
+	});
+	new Raphael.fn.slider("rakeSpacing",{
+		min:1,
+		max:10,
+		initial:2,
+		callback:function(value){
+			solver.setRakeSpacing(value);
+			document.getElementById("spaceText").innerHTML = "Rake Spacing: " + Math.round(value); 
+		}
+	});
+</script>
+</body>
+</html>
