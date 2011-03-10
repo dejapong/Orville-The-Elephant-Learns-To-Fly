@@ -2,7 +2,7 @@
 	This test is intended to be run in node via the command line 
 	To run, use: 
 	
-	node aircraftTest.js
+	node exampleTest.js
 	
 	sys.puts("string") to display a string
 	sys.inspect(object) to return a string representation of an object
