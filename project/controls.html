@@ -9,6 +9,7 @@
 				margin:0px auto; 
 			}
 			#container{
+				background:#eee; 
 				border-radius:5px;
 				-moz-border-radius:5px;
 			}
@@ -18,19 +19,6 @@
 				border:2px solid #000; 
 				float:left;
 				margin:12px 0px 12px 12px;
-			}
-			#flow{
-				width:400px;
-				height:300px;
-				float:left;
-				top:-300px;
-				position:relative;
-			}
-			#windmodel{
-				width:400px;
-				height:300px;
-				float:left;
-				position:relative;
 			}
 			#rightPanel{
 				width:536px;
@@ -42,13 +30,10 @@
 			
 		</style>
 		<script type="text/javascript" src="js/raphael.min.js"></script>
-		<script type="text/javascript" src="js/raphael.slider.js"></script>
-		<script type="text/javascript" src="js/flow/solver.js"></script>
-		<script type="text/javascript" src="js/flight.js"></script>
+		<script type="text/javascript" src="js/raphael.slider.js"></script> 
 		<script type="text/javascript" src="js/controls.js"></script>
 		<script type="text/javascript">
 			window.onload= function(){
-				displayFlowSolver("flow","windmodel");
 				AircraftDisplay("bottomPanel",980,300);
 			}
 		</script>
@@ -56,8 +41,6 @@
 	<body>
 		<div id=header><img src="images/logo.png"></div>
 		<div id=container>
-			<div id="leftPanel"><canvas id="windmodel"></canvas><canvas id="flow"></canvas></div>
-			<div id=rightPanel></div>
 			<div id=bottomPanel></div>
 			<div style="clear:both"></div>
 		</div>
