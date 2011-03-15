@@ -1,19 +1,3 @@
-AircraftBuilder = function(){
-	var wing, tail, xwing, ywing, xtail, ytail, xcg, m, Iyy, maxT;
-	
-	return {
-		setWing:function(wing){
-			this.wing = wing;
-		}
-		getWing:function(){
-			return this.wing;
-		}		
-		build:function(){
-			return new Aircraft(wing, tail, xwing, ywing, xtail, ytail, xcg, m, Iyy, maxT);
-		}
-	}	
-}
-
 Aircraft = function(wing, tail, xwing, ywing, xtail, ytail, xcg, m, Iyy, maxT, qS){
 	
 	var
@@ -29,7 +13,7 @@ Aircraft = function(wing, tail, xwing, ywing, xtail, ytail, xcg, m, Iyy, maxT, q
 		throttlePosition = 0, 	// Ranges from 0 to 1
 		elevatorAngle = 0, 			// Negative is elevator up
 		u, alpha, q, theta, 		// u, alpha, q, theta		
-		w,
+		w, gamma,
 		Fx, Fz,
 		x, z;
 		
@@ -61,13 +45,14 @@ Aircraft = function(wing, tail, xwing, ywing, xtail, ytail, xcg, m, Iyy, maxT, q
 			udot = Fx/m - g*Math.sin(theta) - q*w;
 			wdot = Fz/m + g*Math.cos(theta) + q*u;
 			qdot = M/Iyy;
-			xdot = u*Math.cos(theta) + w*Math.sin(theta);
-			zdot = w*Math.cos(theta) - u*Math.sin(theta);
+			xdot = u*Math.cos(gamma) + w*Math.sin(gamma);
+			zdot = w*Math.cos(gamma) - u*Math.sin(gamma);
 			u = u + udot*dt;
 			w = w + wdot*dt;
 			q = q + qdot*dt;
 			theta = theta + q*dt;
 			alpha = Math.atan(w/u);
+			gamma = theta - alpha;
 			x = x + xdot*dt;
 			z = z + zdot*dt;
 			return [u, w, alpha, q, theta, x, y];
@@ -96,5 +81,3 @@ var tail = new Wing(
 	0.01,		// cd0
 	0.85			// e
 )
-
-var testAircraft = new Aircraft(wing, tail, )
