@@ -1,0 +1,23 @@
+<html>
+	<head>
+		<style type="text/css">
+			body{
+				background:-webkit-gradient(linear, left top, left bottom, from(#3bf), to(#ced));
+			}
+		</style>
+		<script type="text/javascript" src="../js/raphael.min.js"></script>
+		<script type="text/javascript" src="aircraftDynamics.js"></script> 
+		<script type="text/javascript">
+			window.onload= function(){
+				airplane = AircraftDisplay("container",980,500);				
+			}
+			window.onclick=function(){
+				airplane.tick();
+			}
+		</script>		
+	</head>
+	<body>
+		<div id=container>
+		</div>
+	</body>
+</html>
