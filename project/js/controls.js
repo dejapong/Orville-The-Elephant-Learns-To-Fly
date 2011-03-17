@@ -1,11 +1,14 @@
-function AircraftDisplay(holderId,width,height){
-	var paper = Raphael(holderId,width,height);
+function AircraftDisplay(backId,frontId,width,height){
+	var paper = Raphael(backId,width,height);
+	paper.image("images/plane1.png",25,0,900,300);
+	var sky = paper.rect(0,0,width,height);
+	sky.attr({fill:"90-#005991-#191333"}).toBack();
+	paper = Raphael(frontId,width,height);
 	var linkage = new Linkage(paper,{
 		stickLength:80, stickJoinLocation:15, stickPivotX:400, stickPivotY:225,
 		elevPivotX:790, elevPivotY:165, hornLength:30, elevChord:150, elevThickness:7,
 		minAngle:-40, maxAngle:40
 	});
-	paper.image("images/plane1.png",25,0,900,300).toBack();
 }
 
 function Linkage(paper, options){
@@ -86,13 +89,14 @@ function Linkage(paper, options){
 	
 	function startS(){  
 		onStick = true;
-		this.startX = this._drag.x - this.paper.canvas.offsetLeft; 
-		this.startY = this._drag.y - this.paper.canvas.offsetTop;  
+		console.log(this);
+		this.startX = this._drag.x - this.paper.canvas.offsetParent.offsetLeft; 
+		this.startY = this._drag.y - this.paper.canvas.offsetParent.offsetTop;  
 	};
 	function startE(){ 
 		onStick = false;
-		this.startX = this._drag.x - this.paper.canvas.offsetLeft; 
-		this.startY = this._drag.y - this.paper.canvas.offsetTop;  
+		this.startX = this._drag.x - this.paper.canvas.offsetParent.offsetLeft; 
+		this.startY = this._drag.y - this.paper.canvas.offsetParent.offsetTop;  
 	};
 	function upS(){};
 	function upE(){};	

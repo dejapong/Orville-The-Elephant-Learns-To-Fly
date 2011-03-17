@@ -78,11 +78,11 @@ function Solver(width,height){
 	}
 	
 	/** Populate the walls array with a symetrical 4digit NACA airfoil */ 
-	function createAirfoil(){
-		var t = .2;
-		var c = 20; 
-		var xOffset = 32;
-		var yOffset = 32;
+	function createAirfoil(airfoil){
+		var t = airfoil.t;
+		var c = airfoil.c; 
+		var xOffset = airfoil.xOffset;
+		var yOffset = airfoil.yOffset;
 		
 		for (var i=0; i < size; i++)
 			walls[i] = 0; 
@@ -96,8 +96,8 @@ function Solver(width,height){
 				- 0.1015 * (x/c) * (x/c) * (x/c) * (x/c) 
 			);
 			for (j = - y; j <  y; j++){
-				var  xi = Math.round(( x * Math.cos(alpha) - j * Math.sin(alpha)) + xOffset);
-				var yi = Math.round( x * Math.sin(alpha) + j * Math.cos(alpha) + yOffset);
+				var  xi = Math.round(( (x-c/2) * Math.cos(alpha) - (j-t/2) * Math.sin(alpha)) + xOffset);
+				var  yi = Math.round( (x-c/2) * Math.sin(alpha) + (j-t/2) * Math.cos(alpha) + yOffset);
 				walls[ix(xi,yi)] = 1;
 			}
 		}
@@ -197,26 +197,31 @@ function Solver(width,height){
 	}
 	
 	/** Initialize */
+	var currentAirfoil = {
+		t:.2,
+		c:20,
+		xOffset:32,
+		yOffset:32
+	};
 	var size = width * height;
 	var internalW = width-2; 
 	var internalH = height-2; 
 	var solverIterations = 20; 
 	var alpha = 0; //airfoil angle of attack 
-	var speed = 0.2; 
+	var speed = 0.15; 
 	var visc = 0.0;
 	var dens = 0.3; //input density
-	var rakeSpacing = 2; 
+	var rakeSpacing = 5; 
 	var rho =[], rhoPrev =[], u =[], v =[], uPrev = [], vPrev = [],walls =[];
 	for (var i=0; i < size; i++)
 		rho[i] = rhoPrev[i] = u[i] = v[i] = uPrev[i] = vPrev[i] = walls[i] = 0; 
+ 
 
-	createAirfoil();	
-	
 	/** Functions to present publicly*/
 	return {
 		/** Called each time cycle*/
 		tick:function(){
-			var dt = .008;
+			var dt = .01;
 			for (i=1;i<internalH;i +=rakeSpacing){
 				rho[i*width+1] = dens;
 			}
@@ -228,8 +233,8 @@ function Solver(width,height){
 			return rho; 
 		},
 		setAlpha:function(_alpha ){
-			alpha = _alpha * Math.PI / 180; 
-			createAirfoil(); 
+			alpha = _alpha * Math.PI / 180;
+			createAirfoil(currentAirfoil); 
 		},
 		setSpeed:function(_speed){
 			speed = _speed;
@@ -245,6 +250,10 @@ function Solver(width,height){
 		},
 		getWalls:function(){
 			return walls; 
+		},
+		setAirfoil:function(airfoil){
+			currentAirfoil = airfoil;
+			createAirfoil(airfoil);
 		}
 	}
 }
@@ -255,6 +264,12 @@ self.onmessage = function(e){
 	case "init":
 		solver = Solver(e.data.width,e.data.height);
 		self.postMessage({cmd:"ready"});
+		break;
+	case "airfoil":
+		solver.setAirfoil(e.data.airfoil);
+		break;
+	case "alpha":
+		solver.setAlpha(e.data.alpha)
 		break;
 	case "tick":
 		solver.tick(); 
