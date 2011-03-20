@@ -4,7 +4,9 @@ function FlowSolverDisplay(canvasId){
 	var canvas = document.getElementById(canvasId),
 		ctx = canvas.getContext("2d"),
 		imageData = ctx.createImageData(width,height),
-		worker = new Worker("js/flow/solverWorker.js");
+		worker = new Worker("js/flow/solverWorker.js"),
+		globalAlpha = 405,
+		solverInt; 
 		
 	canvas.width = width;
 	canvas.height = height;
@@ -12,7 +14,7 @@ function FlowSolverDisplay(canvasId){
 	worker.onmessage = function(e){
 		switch(e.data.cmd){
 			case "ready":
-				setInterval(function(){
+				solverInt = setInterval(function(){
 					worker.postMessage({cmd:"tick"});
 				},50);
 				break;
@@ -23,7 +25,7 @@ function FlowSolverDisplay(canvasId){
 					imageData.data[i] = 255;
 					imageData.data[i+1] = 255;
 					imageData.data[i+2] = 255;
-					imageData.data[i+3] = rho[index]*405;
+					imageData.data[i+3] = rho[index]*globalAlpha;
 				}
 				ctx.putImageData(imageData,0,0);
 			break;
@@ -38,6 +40,13 @@ function FlowSolverDisplay(canvasId){
 		},
 		setAlpha:function(alpha){
 			worker.postMessage({cmd:"alpha",alpha:alpha}); 
+		},
+		fadeOut:function(delay){
+			step = globalAlpha / (delay / 30); 
+			setInterval(function(){
+				globalAlpha -= step; 
+				if (globalAlpha <= 0){ clearInterval(this); clearInterval(solverInt);}
+			},30);
 		}
 	}
 }

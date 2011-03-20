@@ -38,11 +38,12 @@
 		<script type="text/javascript" src="js/raphael.min.js"></script>
 		<script type="text/javascript" src="js/raphael.slider.js"></script> 
 		<script type="text/javascript" src="js/scenes.js"></script>
+		<script type="text/javascript" src="js/controls.js"></script>
 		<script type="text/javascript" src="js/flow/display.js"></script>
 		<script type="text/javascript">
 			window.onload= function(){
 				var solver = FlowSolverDisplay("flowPanel");
-				OpeningScene("frontPanel","gamePanel",solver);
+				Scenes("frontPanel","gamePanel",solver);
 			}
 		</script>
 	</head>
