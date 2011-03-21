@@ -24,7 +24,7 @@ Aircraft = function(args){
 		ct = tail.getCref(),		// Tail MAC
 		xacw = xwing + 0.25*cw,	// Wing a.c. location
 		xact = xtail + 0.25*ct,	// Tail a.c. location
-		throttlePosition = 0., 	// Ranges from 0 to 1
+		throttle = 0., 	// Ranges from 0 to 1
 		elevatorAngle = 0, 			// Negative is elevator up
 		speed, gamma, 
 		q, alpha, theta, 		// u, alpha, q, theta		
@@ -58,11 +58,11 @@ Aircraft = function(args){
 		M = dynPress*(wing.getCm()*cw*sw - lw*(xacw - xcg) + tail.getCm()*ct*st - lt*(xact - xcg));
 		
 		// Aerodynamic forces in body axis (nose is forwards)
-		T = maxT*throttlePosition;
+		T = maxT*throttle;
 	};
 		
 	function setThrottle(value){
-			throttlePosition = Math.min(Math.max(value, 0), 1);
+			throttle = Math.min(Math.max(value, 0), 1);
 	};
 	function setElevatorAngle(value){
 			elevatorAngle = Math.min(Math.max(value, -25), 25);
@@ -85,7 +85,13 @@ Aircraft = function(args){
 			setElevatorAngle(elevatorAngle+delta);
 		},
 		changeThrottle:function(delta){
-			setThrottle(throttlePosition+delta);
+			setThrottle(throttle+delta);
+		},
+		getElevatorAngle:function(){
+			return elevatorAngle;
+		},
+		getThrottle:function(){
+			return throttle;
 		},
 		tick:function(dt){
 			updateBodyForces();
@@ -105,7 +111,6 @@ Aircraft = function(args){
 			dz = speed*Math.sin(gamma)*dt;
 			x = x + dx;
 			z = z + dz;
-			//console.log([speed]);
 			//console.log([speed, r2d*gamma, r2d*alpha, r2d*theta]);
 			return [speed, gamma, q, alpha, theta, dx, -dz, -dtheta];
 		}
@@ -114,6 +119,6 @@ Aircraft = function(args){
 
 var spitfireWing = new Wing({sref:22.5, ar:6, cl0: 0, clalpha: 0.1, clmax: 1.8, cmac: -0.1, cd0: 0.01, e:0.9});
 var spitfireTail = new Wing({sref:4.0, ar:3, cl0: 0, clalpha: 0.1, clmax: 1.4, cmac: 0.1, cd0: 0.01, e:0.8});
-spitfire = new Aircraft({wing: spitfireWing, tail: spitfireTail, xwing: 2.5, ywing: 0, xtail: 7.7, ytail: 0.5, xcg: 1.0, m: 2900, Iyy: 45000, maxT: 10000, dynPress: 6125});
+spitfire = new Aircraft({wing: spitfireWing, tail: spitfireTail, xwing: 2.5, ywing: 0, xtail: 7.7, ytail: 0.5, xcg: 1.0, m: 2900, Iyy: 60000, maxT: 10000, dynPress: 6125});
 
 

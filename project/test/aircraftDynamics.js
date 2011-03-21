@@ -13,10 +13,12 @@ function AircraftDisplay(containerId, width, height){
 	return {
 		changeElevatorAngle: plane.changeElevatorAngle,
 		changeThrottle: plane.changeThrottle,
+		getElevatorAngle: plane.getElevatorAngle,
+		getThrottle: plane.getThrottle,
 		tick:function(){
 			var i = 0;
 			var inter = setInterval(function(){			
-				var state = plane.tick(0.1);
+				var state = plane.tick(0.05);
 				var speed = state[0];
 				var gamma = r2d*state[1];				
 				var theta = r2d*state[4];

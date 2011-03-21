@@ -25,15 +25,19 @@
 				switch(e.keyCode){
 					case 38:
 						airplane.changeElevatorAngle(1);
+						console.log(airplane.getElevatorAngle());
 						break;
 					case 40:
 						airplane.changeElevatorAngle(-1);
+						console.log(airplane.getElevatorAngle());											
 						break;
 					case 81:
-						airplane.changeThrottle(0.1);						
+						airplane.changeThrottle(0.1);
+						console.log(airplane.getThrottle());
 						break;
 					case 65:
 						airplane.changeThrottle(-0.1);
+						console.log(airplane.getThrottle());						
 						break;						
 				}
 			}
