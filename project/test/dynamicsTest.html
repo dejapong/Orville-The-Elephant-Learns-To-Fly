@@ -10,6 +10,7 @@
 		<div id=container>
 		</div>
 		<script type="text/javascript" src="../js/raphael.min.js"></script>
+		<script type="text/javascript" src="../js/clouds.js"></script>
 		<script type="text/javascript" src="../js/wing.js"></script> 
 		<script type="text/javascript" src="../js/aircraft.js"></script> 
 		<script type="text/javascript" src="aircraftDynamics.js"></script> 
@@ -19,6 +20,22 @@
 			}
 			window.onclick=function(){
 				airplane.tick();
+			}
+			window.onkeydown=function(e){
+				switch(e.keyCode){
+					case 38:
+						airplane.changeElevatorAngle(1);
+						break;
+					case 40:
+						airplane.changeElevatorAngle(-1);
+						break;
+					case 81:
+						airplane.changeThrottle(0.1);						
+						break;
+					case 65:
+						airplane.changeThrottle(-0.1);
+						break;						
+				}
 			}
 		</script>
 	</body>

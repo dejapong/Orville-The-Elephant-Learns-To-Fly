@@ -19,11 +19,21 @@ function CloudsDisplay(paper,gameW,gameH){
 	
 	var cloudInt = startClouds(); 
 	function startClouds(){
-		return setInterval(function(){
+		return setInterval(function(){			
 			for (i = 0 ; i <NUM_CLOUDS; i++){
-				clouds[i].attr({"translation": u + " " + v});
-				if (clouds[i].attr("translation").x > gameW+cloudWidth)
-					clouds[i].attr({"translation":-(gameW+2*cloudWidth)});
+				var translation = clouds[i].attr("translation");
+				var cloud = clouds[i];
+				cloud.attr({"translation": u + " " + v});
+				
+				if (translation.x > gameW+cloudWidth)
+					cloud.attr("translation",-(gameW+2*cloudWidth));		
+				else if (translation.x < -cloudWidth)
+					cloud.attr("translation",(gameW+2*cloudWidth));		
+					
+				if (translation.y > gameH+cloudWidth)
+					cloud.attr("translation","0 "+ -(gameH+2*cloudWidth));
+				else if (translation.y < -cloudWidth)
+					cloud.attr("translation","0 "+ +(gameH+2*cloudWidth));		
 			}
 		},30);	
 	}
@@ -46,7 +56,7 @@ function CloudsDisplay(paper,gameW,gameH){
 		},
 		setAngle:function(degrees){
 			angle = degrees;
-			this.setSpeed(speed);
+			//this.setSpeed(speed);
 		}
 	}
 }

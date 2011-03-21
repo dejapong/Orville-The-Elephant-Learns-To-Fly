@@ -61,6 +61,13 @@ Aircraft = function(args){
 		T = maxT*throttlePosition;
 	};
 		
+	function setThrottle(value){
+			throttlePosition = Math.min(Math.max(value, 0), 1);
+	};
+	function setElevatorAngle(value){
+			elevatorAngle = Math.min(Math.max(value, -25), 25);
+	};		
+	
 	return {
 		setState:function(speed0, gamma0, q0, alpha0, theta0, x0, z0){
 			speed = speed0;
@@ -71,12 +78,15 @@ Aircraft = function(args){
 			x = x0;
 			z = z0;
 		},
-		setThrottle:function(value){
-			throttlePosition = Math.min(Math.max(value, 0), 1);
+		setThrottle:setThrottle,
+		setElevatorAngle:setElevatorAngle,		
+		changeElevatorAngle:function(delta){		
+			console.log(this);
+			setElevatorAngle(elevatorAngle+delta);
 		},
-		setElevatorAngle:function(value){
-			elevatorAngle = Math.min(Math.max(value, -25), 25);
-		},		
+		changeThrottle:function(delta){
+			setThrottle(throttlePosition+delta);
+		},
 		tick:function(dt){
 			updateBodyForces();
 						
@@ -95,7 +105,7 @@ Aircraft = function(args){
 			dz = speed*Math.sin(gamma)*dt;
 			x = x + dx;
 			z = z + dz;
-			console.log([speed]);
+			//console.log([speed]);
 			//console.log([speed, r2d*gamma, r2d*alpha, r2d*theta]);
 			return [speed, gamma, q, alpha, theta, dx, -dz, -dtheta];
 		}
@@ -104,6 +114,6 @@ Aircraft = function(args){
 
 var spitfireWing = new Wing({sref:22.5, ar:6, cl0: 0, clalpha: 0.1, clmax: 1.8, cmac: -0.1, cd0: 0.01, e:0.9});
 var spitfireTail = new Wing({sref:4.0, ar:3, cl0: 0, clalpha: 0.1, clmax: 1.4, cmac: 0.1, cd0: 0.01, e:0.8});
-spitfire = new Aircraft({wing: spitfireWing, tail: spitfireTail, xwing: 2.5, ywing: 0, xtail: 7.7, ytail: 0.5, xcg: 2.0, m: 2900, Iyy: 45000, maxT: 10000, dynPress: 6125});
+spitfire = new Aircraft({wing: spitfireWing, tail: spitfireTail, xwing: 2.5, ywing: 0, xtail: 7.7, ytail: 0.5, xcg: 1.0, m: 2900, Iyy: 45000, maxT: 10000, dynPress: 6125});
 
 

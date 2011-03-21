@@ -4,17 +4,25 @@ function AircraftDisplay(containerId, width, height){
 	var y0 = 250;
 	
 	var paper = Raphael(containerId,width,height);	
+	var clouds = CloudsDisplay(paper,980,600);
 	var planePic = paper.image("../images/plane1.png",x0,y0,98*2,30*2);
 	var plane = spitfire;
 	plane.setState(100, 0, 0, 5, 5, 0, 0)
-	plane.setElevatorAngle(-10);
+	plane.setElevatorAngle(0);
+	plane.setThrottle(0.5);
 	return {
+		changeElevatorAngle: plane.changeElevatorAngle,
+		changeThrottle: plane.changeThrottle,
 		tick:function(){
 			var i = 0;
 			var inter = setInterval(function(){			
-				state = plane.tick(0.1);
-				//planePic.translate(-state[5],state[6]);
-				planePic.rotate(r2d*state[4], true);
+				var state = plane.tick(0.1);
+				var speed = state[0];
+				var gamma = r2d*state[1];				
+				var theta = r2d*state[4];
+				planePic.rotate(theta, true);
+				clouds.setAngle(gamma);
+				clouds.setSpeed(speed);
 				i++;
 				if (i>13000) clearInterval(inter);
 			},10)	
