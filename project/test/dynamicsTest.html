@@ -5,7 +5,13 @@
 				background:-webkit-gradient(linear, left top, left bottom, from(#4bf), to(#ced));
 			}
 		</style>
+	</head>
+	<body>
+		<div id=container>
+		</div>
 		<script type="text/javascript" src="../js/raphael.min.js"></script>
+		<script type="text/javascript" src="../js/wing.js"></script> 
+		<script type="text/javascript" src="../js/aircraft.js"></script> 
 		<script type="text/javascript" src="aircraftDynamics.js"></script> 
 		<script type="text/javascript">
 			window.onload= function(){
@@ -14,10 +20,6 @@
 			window.onclick=function(){
 				airplane.tick();
 			}
-		</script>		
-	</head>
-	<body>
-		<div id=container>
-		</div>
+		</script>
 	</body>
 </html>

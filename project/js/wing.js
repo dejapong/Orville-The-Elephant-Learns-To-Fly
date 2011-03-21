@@ -1,5 +1,14 @@
-Wing = function(sref, ar, cl0, clalpha, clmax, cmac, cd0, e){
+Wing = function(args){
 
+ 	var 
+ 		sref = args.sref, 
+ 		ar = args.ar, 
+ 		cl0 = args.cl0, 
+ 		clalpha = args.clalpha, 
+ 		clmax = args.clmax, 
+ 		cmac = args.cmac, 
+ 		cd0 = args.cd0, 
+ 		e = args.e;
 	var alpha = 0;
 	var K = 1/(Math.PI*ar*e);
 	var cbar = Math.sqrt(sref/ar);
@@ -33,29 +42,4 @@ Wing = function(sref, ar, cl0, clalpha, clmax, cmac, cd0, e){
 	}
 }
 
-var sys = require("sys")
-var testWing = new Wing(
-	10, 		// sref 
-	8, 			// ar
-	0.1,		// cl0
-	0.1,		// clalpha
-	1.2,		// clmax
-	-0.1,		// cmac	
-	0.01,		// cd0
-	0.9			// e
-	);
 
-function WingTest(testWing, alpha){
-	testWing.setAlpha(alpha);	
-	sys.puts("alpha = " + alpha.toFixed(2));
-	sys.puts("CL = " + testWing.getCl().toFixed(2));
-	sys.puts("CD = " + testWing.getCd().toFixed(2));
-	sys.puts("Cm = " + testWing.getCm().toFixed(2));
-	sys.puts("")
-}
-
-WingTest(testWing, 5.0)
-WingTest(testWing, 7.5)
-WingTest(testWing, 10.0)
-WingTest(testWing, 25.0)
-WingTest(testWing, -15.0)
