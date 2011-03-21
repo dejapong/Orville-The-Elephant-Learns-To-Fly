@@ -1,38 +1,76 @@
-Aircraft = function(wing, tail, xwing, ywing, xtail, ytail, xcg, m, Iyy, maxT, qS){
+Aircraft = function(args){
+
+	g = 9.81,
+	d2r = Math.PI/180,
+	r2d = 180/Math.PI,
+	rho = 1.225;
 	
 	var
-		g = 9.81,
-		d2r = Math.PI/180,
-		r2d = 180/Math.PI,
+		wing = args.wing, 
+		tail = args.tail, 
+		xwing = args.xwing, 
+		ywing = args.ywing, 
+		xtail = args.xtail, 
+		ytail = args.ytail, 
+		xcg = args.xcg, 
+		m = args.m, 
+		Iyy = args.Iyy, 
+		maxT = args.maxT, 
+		dynPress = args.dynPress;
+	var
 		sw = wing.getSref(),		// Wing area
 		st = tail.getSref(),		// Tail area
 		cw = wing.getCref(),		// Wing MAC
 		ct = tail.getCref(),		// Tail MAC
 		xacw = xwing + 0.25*cw,	// Wing a.c. location
 		xact = xtail + 0.25*ct,	// Tail a.c. location
-		throttlePosition = 0, 	// Ranges from 0 to 1
+		throttlePosition = 0., 	// Ranges from 0 to 1
 		elevatorAngle = 0, 			// Negative is elevator up
-		u, alpha, q, theta, 		// u, alpha, q, theta		
-		w, gamma,
-		Fx, Fz,
-		x, z;
+		speed, gamma, 
+		q, alpha, theta, 		// u, alpha, q, theta		
+		x, z,
+		T;
 		
 	var updateBodyForces = function(){
-		wing.setAlpha(alpha);
-		alphat = alpha + d2r*elevatorAngle;			// TODO: add downwash effects etc.
+		dynPress = 0.5*rho*speed*speed;
+		// Get alpha in degrees to feed to wing
+		alphaDeg = r2d*alpha;
+		wing.setAlpha(alphaDeg);
+		// Similarly for tail
+		// TODO: add downwash effects etc.
+		u = speed*Math.cos(alpha);
+		w = speed*Math.sin(alpha);
+		alphat = alphaDeg + elevatorAngle + r2d*Math.atan((w + q*(xtail - xcg))/u);			
 		tail.setAlpha(alphat);
+		// get CL values
 		clw = wing.getCl();
 		clt = tail.getCl();
+		cdw = wing.getCd();
+		cdt = tail.getCd();
+		//console.log([clw, clt, cdw, cdt]);
+		// Multiply by respective areas
 		lw = clw*sw;
 		lt = clt*st;
-		M = qS*(wing.getCm()*cw - lw*xacw + tail.getCm()*ct - lt*xact);
-		L = qS*(lw + lt);
-		D = qS*(wing.getCd() + tail.getCd());
-		Fx = L*Math.sin(alpha) - D*Math.cos(alpha) + maxT*throttlePosition;
-		Fz = L*Math.cos(alpha) + D*Math.sin(alpha);
+		// Dimensional forces
+		L = dynPress*(lw + lt);
+		D = dynPress*(cdw*sw + cdt*st);
+		// Dimensional moment
+		M = dynPress*(wing.getCm()*cw*sw - lw*(xacw - xcg) + tail.getCm()*ct*st - lt*(xact - xcg));
+		
+		// Aerodynamic forces in body axis (nose is forwards)
+		T = maxT*throttlePosition;
 	};
 		
 	return {
+		setState:function(speed0, gamma0, q0, alpha0, theta0, x0, z0){
+			speed = speed0;
+			gamma = d2r*gamma0;
+			q = q0;
+			alpha = d2r*alpha0;
+			theta = d2r*theta0;
+			x = x0;
+			z = z0;
+		},
 		setThrottle:function(value){
 			throttlePosition = Math.min(Math.max(value, 0), 1);
 		},
@@ -40,44 +78,32 @@ Aircraft = function(wing, tail, xwing, ywing, xtail, ytail, xcg, m, Iyy, maxT, q
 			elevatorAngle = Math.min(Math.max(value, -25), 25);
 		},		
 		tick:function(dt){
-			this.updateBodyForces();
-			w = u*Math.sin(alpha);
-			udot = Fx/m - g*Math.sin(theta) - q*w;
-			wdot = Fz/m + g*Math.cos(theta) + q*u;
+			updateBodyForces();
+						
+			speeddot = 1/m*(T*Math.cos(alpha) - D - m*g*Math.sin(gamma));			
+			gammadot = 1/(speed*m)*(T*Math.sin(alpha) + L - m*g*Math.cos(gamma));			
 			qdot = M/Iyy;
-			xdot = u*Math.cos(gamma) + w*Math.sin(gamma);
-			zdot = w*Math.cos(gamma) - u*Math.sin(gamma);
-			u = u + udot*dt;
-			w = w + wdot*dt;
-			q = q + qdot*dt;
-			theta = theta + q*dt;
-			alpha = Math.atan(w/u);
-			gamma = theta - alpha;
-			x = x + xdot*dt;
-			z = z + zdot*dt;
-			return [u, w, alpha, q, theta, x, y];
+
+			speed = speed + speeddot*dt;
+			gamma = gamma + gammadot*dt;			
+			q = q + qdot*dt;		
+			dtheta = q*dt;
+			theta = theta + dtheta;
+			alpha = theta - gamma;
+
+			dx = speed*Math.cos(gamma)*dt;
+			dz = speed*Math.sin(gamma)*dt;
+			x = x + dx;
+			z = z + dz;
+			console.log([speed]);
+			//console.log([speed, r2d*gamma, r2d*alpha, r2d*theta]);
+			return [speed, gamma, q, alpha, theta, dx, -dz, -dtheta];
 		}
 	}
 }
 
-var sys = require("sys")
-var wing = new Wing(	
-	10, 		// sref 
-	8, 			// ar
-	0.1,		// cl0
-	0.1,		// clalpha
-	1.2,		// clmax
-	-0.1,		// cmac	
-	0.01,		// cd0
-	0.9			// e
-)
-var tail = new Wing(	
-	2, 		// sref 
-	4, 			// ar
-	0.0,		// cl0
-	0.06,		// clalpha
-	1.0,		// clmax
-	0.0,		// cmac	
-	0.01,		// cd0
-	0.85			// e
-)
+var spitfireWing = new Wing({sref:22.5, ar:6, cl0: 0, clalpha: 0.1, clmax: 1.8, cmac: -0.1, cd0: 0.01, e:0.9});
+var spitfireTail = new Wing({sref:4.0, ar:3, cl0: 0, clalpha: 0.1, clmax: 1.4, cmac: 0.1, cd0: 0.01, e:0.8});
+spitfire = new Aircraft({wing: spitfireWing, tail: spitfireTail, xwing: 2.5, ywing: 0, xtail: 7.7, ytail: 0.5, xcg: 2.0, m: 2900, Iyy: 45000, maxT: 10000, dynPress: 6125});
+
+
