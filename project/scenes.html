@@ -1,0 +1,58 @@
+<html>
+	<head>
+		<style type="text/css">
+			body{
+				background:#111;
+			}
+			#container, #header{
+				width:980px;
+				margin:0px auto; 
+			}
+			#container{
+				background:#eee; 
+				border-radius:5px;
+				-moz-border-radius:5px; 
+			}
+			#gamePanel{
+				position:absolute;
+				top:0px;
+				width:980px;
+				height:600px;
+				z-index:1;
+			}
+			#flowPanel{
+				position:absolute;
+				top:0px; 
+				width:980px;
+				height:600px;
+				z-index:2;
+			}
+			#frontPanel{
+				position:absolute;
+				top:0px;
+				width:980px;
+				height:600px;
+				z-index:3;				
+			}
+		</style>
+		<script type="text/javascript" src="js/raphael.min.js"></script>
+		<script type="text/javascript" src="js/raphael.slider.js"></script> 
+		<script type="text/javascript" src="js/scenes.js"></script>
+		<script type="text/javascript" src="js/controls.js"></script>
+		<script type="text/javascript" src="js/flow/display.js"></script>
+		<script type="text/javascript">
+			window.onload= function(){
+				var solver = FlowSolverDisplay("flowPanel");
+				Scenes("frontPanel","gamePanel",solver);
+			}
+		</script>
+	</head>
+	<body>
+		<div id=container>
+			<div id="gamePanel"></div>
+			<canvas id="flowPanel"></canvas>			
+			<div id="frontPanel"></div>
+			<div style="clear:both"></div>
+		</div>
+	</body>
+</html>
