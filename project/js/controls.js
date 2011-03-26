@@ -1,4 +1,4 @@
-function AircraftDisplay(backId,frontId,width,height){
+/*function AircraftDisplay(backId,frontId,width,height){
 	var paper = Raphael(backId,width,height);
 	paper.image("images/plane1.png",25,0,900,300);
 	var sky = paper.rect(0,0,width,height);
@@ -9,7 +9,7 @@ function AircraftDisplay(backId,frontId,width,height){
 		elevPivotX:790, elevPivotY:165, hornLength:30, elevChord:150, elevThickness:7,
 		minAngle:-40, maxAngle:40
 	});
-}
+}*/
 
 function Linkage(paper, options){
 	//Defaults
@@ -25,7 +25,7 @@ function Linkage(paper, options){
 		eX = o.elevPivotX, eY = o.elevPivotY, eL = o.hornLength,
 		tt = o.elevThickness, ct = o.elevChord,
 		startX, startY, onStick;
-		
+	
 	//Materials and Colors
 	var metalPart = {"fill":"#ccc","stroke":"#999"},
 		grip = {"fill":"#a44","stroke":"#300"},
@@ -36,13 +36,11 @@ function Linkage(paper, options){
 
 	//Control Stick
 	stickSet = paper.set();
-	stickSet.push(stick);
-	stickSet.push(handle);
-	stickSet.drag(move, startS, upS);
-	
+	stickSet.push(stick,handle,stickHub);
 	stick.attr(metalPart);
 	stickHub.attr(metalPart);
 	handle.attr(grip);
+	stickSet.drag(move, startS, upS);
 	
 	//Elevator
 	var horn = paper.rect(eX-3,eY-eL+3,6,eL);
@@ -58,15 +56,16 @@ function Linkage(paper, options){
 	hornHub.attr(skin);
 	horn.attr(metalPart);
 	elevatorSet = paper.set(); 
-	elevatorSet.push(horn);
-	elevatorSet.push(elevator);
+	elevatorSet.push(horn,elevator,hornHub);
 	elevatorSet.drag(move, startE, upE);
-
+	
 	//Arm
 	var arm = paper.path("M" + sX + " " + (sY-sJ) + "L" + eX + " " + eY );
 	arm.attr({"stroke-width":3,"stroke":"#999"});
 	arm.insertBefore(stick);
 	
+	var linkageSet = paper.set();
+	linkageSet.push(stickSet,elevatorSet,arm);
 	//Drag functions
 	function move(dx,dy){	
 		var x = this.startX + dx; 
@@ -100,4 +99,6 @@ function Linkage(paper, options){
 	};
 	function upS(){};
 	function upE(){};	
+	
+	return linkageSet;
 }

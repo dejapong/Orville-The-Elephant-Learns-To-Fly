@@ -41,11 +41,15 @@ function FlowSolverDisplay(canvasId){
 		setAlpha:function(alpha){
 			worker.postMessage({cmd:"alpha",alpha:alpha}); 
 		},
-		fadeOut:function(delay){
-			step = globalAlpha / (delay / 30); 
-			setInterval(function(){
-				globalAlpha -= step; 
-				if (globalAlpha <= 0){ clearInterval(this); clearInterval(solverInt);}
+		fadeHide:function(){
+			var step = globalAlpha / (10); 
+			var fadeInt = setInterval(function(){
+				globalAlpha -= step;
+				if (globalAlpha <= 0){
+					clearInterval(fadeInt);
+					clearInterval(solverInt);
+					ctx.clearRect(0,0,width,height);
+				}
 			},30);
 		}
 	}

@@ -1,8 +1,6 @@
 function AircraftDisplay(containerId, width, height){
-
 	var x0 = 400;
-	var y0 = 250;
-	
+	var y0 = 250;	
 	var paper = Raphael(containerId,width,height);	
 	var clouds = CloudsDisplay(paper,980,600);
 	var planePic = paper.image("../images/plane1.png",x0,y0,98*2,30*2);

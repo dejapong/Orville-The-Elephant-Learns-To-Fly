@@ -15,7 +15,8 @@ function Scenes(frontId,backId,flowSolver){
 		sky = back.rect(0,0,gameW,gameH).attr({fill:"90-#13354a-#132149"}).toBack(),
 		airfoil = AirfoilDisplay(), 
 		aircraft = AircraftDisplay(),
-		solver = SolverDisplay(); 
+		solver = SolverDisplay(),
+		clouds = CloudsDisplay(back,gameW,gameH), linkage; 
 
 		
 	
@@ -27,7 +28,8 @@ function Scenes(frontId,backId,flowSolver){
 		var titleText = ["Orville","the","Elephant","\nLearns","How","to","Fly"], 
 			textSet = back.set();
 			
-		cloudObj = DrawClouds();
+		clouds.setSpeed(90);
+		
 		drawIntro();
 		
 		function drawIntro(){ 
@@ -92,8 +94,8 @@ function Scenes(frontId,backId,flowSolver){
 		}
 		function endScene(){
 			setTimeout(function(){					
-				aircraft.fadeHide();			
-				cloudObj.fadeHide();
+				aircraft.fadeHide(function(){});			
+				clouds.fadeHide();
 				dialog.attr("text", "Air over the wings creates an upward force");
 				Scene2();
 			},2000);
@@ -118,7 +120,7 @@ function Scenes(frontId,backId,flowSolver){
 				messageBox = PopUp(front,
 					"More text about the air and educational stuff. Talk about Lift, drag and stalls",
 					textPane3);
-			}); 
+			});
 		}
 		function textPane3(){ 
 			var liftArrow = new LiftArrow(front),
@@ -154,7 +156,7 @@ function Scenes(frontId,backId,flowSolver){
 				DrawSeparated);		
 		});
 		solver.setAlpha(0);
-		
+				
 		function DrawAttached(){
 			topLine = back.path("M692.39,127.945l-269.25-25.969c-23.125-8-125.5-24-176.25-24c-63.375,0-68.25,18.748-75,18.748h-269");
 			bottomLine = back.path("M-97.109,100.976h269c6.625,0,10.125,14.375,69.375,14.375c7.875,0,84.625,0.75,180.375-10.125l270.75,25.219");
@@ -187,21 +189,46 @@ function Scenes(frontId,backId,flowSolver){
 					bottomLine.translate(220,183).scale(2.5).attr({stroke:"#d66"});					
 				});
 			});
-		}	
-		
+		}
+
 		function endSolver(){				
 			clearInterval(streamInt);
 			topLine.remove(); bottomLine.remove(); streamLines.remove();
 			solver.fadeHide();
 			airfoil.setAlpha(0,function(){
-			airfoil.fadeHide(function(){								
-				var aircraft = AircraftDisplay();
-				aircraft.fadeShow(function(){});
-				solver.fadeOut(function(){});
-			});});
+			var aircraft = AircraftDisplay();
+				aircraft.fadeShow();
+				solver.fadeHide();
+				clouds.fadeShow();
+				airfoil.scaleHide();
+				messageBox.hide(function(){}); 
+				Scene4();
+			});
 		}
 	}//end stalls
+	
+	function Scene4(){
+		aircraft.rotate(10,true);
+		var i = 0;
+		var plane = spitfire;
+		plane.setElevatorAngle(0);
+		plane.setThrottle(0.5);
+		plane.setState(100, 0, 0, 5, 5, 0, 0);
+
 		
+		var inter = setInterval(function(){
+			var state = plane.tick(0.05);
+			var speed = state[0];
+			var gamma = r2d*state[1];		
+			var theta = r2d*state[4];
+			aircraft.rotate(theta, true);
+			clouds.setAngle(gamma);
+			clouds.setSpeed(speed);
+			i++;
+			if (i>13000) clearInterval(inter);
+		},10);
+	}
+	
 	/** 
 		Fade in the aircraft then zoom out. 	
 		Put in some clouds in motion. Allow the user to rotate the plane in place
@@ -209,7 +236,6 @@ function Scenes(frontId,backId,flowSolver){
 	*/
 	function AircraftDisplay(){
 		var aircraftSet = back.set();
-		var orvilleSet = back.set();
 		var startX = 100; 
 		var startY = 110; 
 		var endX = 840;
@@ -218,11 +244,11 @@ function Scenes(frontId,backId,flowSolver){
 		var orville = back.image("images/orvilleSeated.png",startX + 280,startY+63,137,142);
 		var orvillesEye = back.circle(startX + 347,201,3).attr({fill:"#000"});
 		var orvillesArm =  back.image("images/orvillesArm.png",startX + 346,startY + 135,30,28);
-		var aircraftFront = back.image("images/plane1solid.png",startX,startY,780,250);
-		orvilleSet.push(orville,orvillesEye,orvillesArm);
-		aircraftSet.push(aircraftFront,aircraftBack,orvilleSet)
+		linkage = new Linkage(front,{stickPivotX:390,stickPivotY:305,elevPivotX:750,elevPivotY:250,elevChord:130});
+		var aircraftFront = front.image("images/plane1solid.png",startX,startY,780,250);		
+		aircraftSet.push(aircraftFront,aircraftBack,orville,orvillesEye,orvillesArm,linkage)
 			.attr("opacity",0);
-		
+ 		
 		return {
 			flyIn:function(callback){
 				aircraftSet.translate(endX, 0);
@@ -249,14 +275,15 @@ function Scenes(frontId,backId,flowSolver){
 					if (callback) callback();
 				}); }); }); }); });
 			},
-			fadeHide:function(callback){
+			fadeHide:function(callback){					
 				aircraftSet.animate({opacity:0},1000,function(){
 					aircraftSet.hide();
 					if (callback) callback();
 				});
 			},
 			fadeShow:function(callback){
-				aircraftSet.show().animate({opacity:1},1000);
+				aircraftFront.remove();
+				aircraftSet.animate({opacity:1},1000);
 				if (callback) callback();
 			},
 			getLEX:function(){
@@ -265,14 +292,17 @@ function Scenes(frontId,backId,flowSolver){
 			getLEZ:function(){
 				return startY-107; 
 			},
-			getScale:function(){},
+			getScale:function(){return scale;},
 			toFront:function(){
 				aircraftSet.toFront();
 				aircraftFront.toFront();
+			},
+			rotate:function(angle,absolute){
+				aircraftSet.rotate(angle,gw,gh);
 			}
 		}
 	}
-	
+
 	function AirfoilDisplay(){
 		var _airfoil = front.set();
 		path9 = front.path("M200.99,3.89c3.17,0.54,6.38,1.1,9.62,1.66"
@@ -309,13 +339,18 @@ function Scenes(frontId,backId,flowSolver){
 				var aircraft = AircraftDisplay(); 
 				_airfoil.translate(aircraft.getLEX(),aircraft.getLEZ())
 				.attr("opacity",1)
-				.animate({scale:1.5,"translation":130 + " " + 20},1000);
+				.animate({scale:1.5,"translation":130 + " " + -3},1000);
 			},
 			setAlpha:function(angle,callback){
 				_airfoil.animate({"rotation":angle+",485,"+gh},500, callback);
 			},
 			fadeHide:function(callback){
 				_airfoil.animate({opacity:0},500, callback);
+			},
+			scaleHide:function(callback){
+				_airfoil.animate({opacity:0,"scale":1,"translation":-130 +","+3},500, function(){
+					_airfoil.hide();
+				});
 			},
 			turnRed:function(callback){
 				_airfoil.attr(redAirfoil);
@@ -392,13 +427,4 @@ function Scenes(frontId,backId,flowSolver){
 		});
 	}
 	
-	/**
-		Draw lift arrows to show how the tail changes alpha
-		allow the user to drag the stick and change the angle. 
-		Plane stays in place
-	*/
-	
-	/**
-		Zoom out once again and let the user fly the plane with throttle
-	*/
 }
