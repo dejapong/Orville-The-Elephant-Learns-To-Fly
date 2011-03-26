@@ -8,7 +8,7 @@ function AircraftDisplay(containerId, width, height){
 	var planePic = paper.image("../images/plane1.png",x0,y0,98*2,30*2);
 	var plane = spitfire;
 	plane.setState(100, 0, 0, 5, 5, 0, 0)
-	plane.setElevatorAngle(0);
+	plane.setElevatorAngle(-5);
 	plane.setThrottle(0.5);
 	return {
 		changeElevatorAngle: plane.changeElevatorAngle,
@@ -27,7 +27,7 @@ function AircraftDisplay(containerId, width, height){
 				clouds.setSpeed(speed);
 				i++;
 				if (i>13000) clearInterval(inter);
-			},10)	
+			},20)	
 		}
 	}	
 }
