@@ -23,12 +23,12 @@ Wing = function(args){
 		getCl:function(){
 			cl = cl0 + clalpha*alpha;			
 			if (cl > clmax) {
-				cl = cl0 + 0.4*clalpha*alpha;
+				cl = cl0 + 0.25*clalpha*alpha;
 //  			cl = Math.min(cl, 2*clmax);
 //				cl = clmax/2;
 			}
 			else if (cl < -clmax) {
-				cl += cl0 + 0.4*clalpha*alpha;
+				cl += cl0 + 0.25*clalpha*alpha;
 // 				 dcl = clmax - cl;				
 //  				cl += dcl;
 //  				cl = Math.max(cl, -2*clmax);

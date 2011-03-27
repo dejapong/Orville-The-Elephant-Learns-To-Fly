@@ -1,6 +1,5 @@
 function CloudsDisplay(paper,gameW,gameH){
-	var NUM_CLOUDS = 10;
-	var CLOUD_LAYERS = 3; 
+	var NUM_CLOUDS = 12;
 	var clouds = [];
 	var cloudWidth = 300; 
 	var u =0, v = 0;
@@ -13,46 +12,57 @@ function CloudsDisplay(paper,gameW,gameH){
 		.attr({fill:"#fff","stroke-width":0,opacity:0.0});
 			
 	for (i = 0 ; i < NUM_CLOUDS; i++){
-		clouds.push(cloud.clone().translate(Math.random()*gameW*2-gameW,Math.random()*gameH*2-gameH)
-			.animate({opacity:0.75},2000));
-	}
-	
-	var cloudInt = startClouds(); 
-	function startClouds(){
-		return setInterval(function(){			
-			for (i = 0 ; i <NUM_CLOUDS; i++){
-				var translation = clouds[i].attr("translation");
-				var cloud = clouds[i];
-				cloud.attr({"translation": u + " " + v});
-				
-				if (translation.x > gameW+cloudWidth)
-					cloud.attr("translation",-(gameW+2*cloudWidth));		
-				else if (translation.x < -cloudWidth)
-					cloud.attr("translation",(gameW+2*cloudWidth));		
-					
-				if (translation.y > gameH+cloudWidth)
-					cloud.attr("translation","0 "+ -(gameH+2*cloudWidth));
-				else if (translation.y < -cloudWidth)
-					cloud.attr("translation","0 "+ +(gameH+2*cloudWidth));		
-			}
-		},30);	
+		var newCloud = cloud.clone()
+			.translate(Math.random()*gameW*2-gameW,Math.random()*gameH*2-gameH);
+		newCloud.speed = Math.random() + 0.1;
+		newCloud.scale(newCloud.speed);
+		newCloud.attr("opacity",0.7*newCloud.speed);
+		clouds.push(newCloud);
 	}
 	
 	return {
 		fadeHide:function(callback){
-			clearInterval(cloudInt);
-			for (i = 0 ; i <NUM_CLOUDS; i++) clouds[i].animate({opacity:0},function(){this.hide();});
-			if (callback) callback();
+			for (i = 0 ; i <NUM_CLOUDS; i++){
+				var cloud = clouds[i];
+				cloud.animate({opacity:0},500,function(){
+					if (callback){
+						callback();
+						callback = undefined; 
+					}
+					this.hide();
+				});			
+			}
 		},
-		fadeShow:function(callback){
-			cloudInt = startClouds();
-			for (i = 0 ; i <NUM_CLOUDS; i++) clouds[i].animate({opacity:1},function(){this.show();});
-			if (callback) callback();
+		fadeShow:function(callback){ 
+			for (i = 0 ; i <NUM_CLOUDS; i++){
+				var cloud = clouds[i];			
+				var opacity = cloud.speed*0.7;
+				cloud.show();
+				cloud.animate({opacity:opacity},500,function(){
+					if (callback) callback();
+				});	
+			}
 		},
 		setSpeed:function(metersPerSecond){
 			u = metersPerSecond/4 * Math.cos(angle*Math.PI/180);
 			v = metersPerSecond/4 * Math.sin(angle*Math.PI/180);
 			speed = metersPerSecond/4; 
+		},
+		tick:function(){
+			for (i = 0 ; i <NUM_CLOUDS; i++){
+				var cloud = clouds[i],
+				translation = cloud.attr("translation"),
+				speed = cloud.speed; 
+				cloud.attr({"translation": u*speed + " " + v*speed});
+				if (translation.x > gameW+cloudWidth)
+					cloud.attr("translation",-(gameW+2*cloudWidth));		
+				else if (translation.x < -cloudWidth)
+					cloud.attr("translation",(gameW+2*cloudWidth));		
+				if (translation.y > gameH+cloudWidth)
+					cloud.attr("translation","0 "+ -(gameH+2*cloudWidth));
+				else if (translation.y < -cloudWidth)
+					cloud.attr("translation","0 "+ +(gameH+2*cloudWidth));		
+			}
 		},
 		setAngle:function(degrees){
 			angle = degrees;

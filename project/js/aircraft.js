@@ -83,8 +83,7 @@ Aircraft = function(args){
 		},
 		setThrottle:setThrottle,
 		setElevatorAngle:setElevatorAngle,		
-		changeElevatorAngle:function(delta){		
-			console.log(this);
+		changeElevatorAngle:function(delta){	 
 			setElevatorAngle(elevatorAngle+delta);
 		},
 		changeThrottle:function(delta){
@@ -126,4 +125,8 @@ Aircraft = function(args){
 
 var spitfireWing = new Wing({sref:22.5, ar:6, cl0: 0.2, clalpha: 0.1, clmax: 1.6, cmac: -0.1, cd0: 0.01, e:0.9});
 var spitfireTail = new Wing({sref:4.0, ar:3, cl0: 0, clalpha: 0.05, clmax: 1.2, cmac: 0.0, cd0: 0.025, e:0.8});
-spitfire = new Aircraft({wing: spitfireWing, tail: spitfireTail, xwing: 2.5, ywing: 0, xtail: 7.7, ytail: 0.5, xcg: 2.8, m: 2900, Iyy: 100000, maxT: 8000, dynPress: 6125});
+spitfire = new Aircraft({wing: spitfireWing, tail: spitfireTail, xwing: 2.5, ywing: 0, xtail: 7.7, ytail: 0.5, xcg: 2.8, m: 2900, Iyy: 100000, maxT: 11000, dynPress: 6125});
+
+self.onmessage = function(e){
+	spitfire[e.data.cmd]();
+}
