@@ -23,29 +23,16 @@ Wing = function(args){
 		getCl:function(){
 			cl = cl0 + clalpha*alpha;			
 			if (cl > clmax) {
-				cl = cl0 + 0.4*clalpha*alpha;
-//  			cl = Math.min(cl, 2*clmax);
-//				cl = clmax/2;
+				cl = cl0 + 0.25*clalpha*alpha;
 			}
 			else if (cl < -clmax) {
-				cl += cl0 + 0.4*clalpha*alpha;
-// 				 dcl = clmax - cl;				
-//  				cl += dcl;
-//  				cl = Math.max(cl, -2*clmax);
-				//cl += Math.exp(-dcl*dcl/4);	
-				//cl = -clmax/2;
+				cl += cl0 + 0.25*clalpha*alpha;
 			}
 			return cl;
 		},
 		getCd:function(){
 			cl = cl0 + clalpha*alpha;	
 			cd = cd0 + K*cl*cl;
-// 			dcl = 0;
-// 			if (cl > clmax)
-// 				dcl = cl - clmax;			
-// 			else if (cl < -clmax)
-// 				dcl = -clmax - cl;
-// 			cd += K*dcl*dcl;
 			return cd;
 		},
 		getCm:function(){
