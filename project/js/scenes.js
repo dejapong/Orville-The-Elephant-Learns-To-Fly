@@ -112,11 +112,12 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 			}
 		},30);
 	})();
+	
 	/*
 	aircraft.fadeShow();
 	aircraft.scale(0.5);
 	aircraft.fadeOutFront();
-	Scene4();
+	Scene4()
 	
 
 	//******************************************************************************
@@ -143,9 +144,9 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 			});
 		}
 		function endScene(){
-			aircraft.fadeHide(function(){});			
-			clouds.fadeHide(function(){delete renderMethods["clouds"]});
-			Scene2();
+				aircraft.fadeHide(function(){});			
+				clouds.fadeHide(function(){delete renderMethods["clouds"]});
+				Scene2();
 		}
 	}
 	
@@ -174,8 +175,8 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 				dragArrow.setValue(angle);
 			}*/
 			messageBox = Dialog("When you're ready, click here to learn about stalls",-1, Scene3);
+			}
 		}
-	}
 	
 	//******************************************************************************
 	//****	SCENE3 
@@ -208,17 +209,17 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 			streamLines.attr({"stroke-width":6});
 		}
 
-		function DrawSeparated(){			
+		function DrawSeparated(){
 			Dialog("You can see separated flow here",10000,endSolver);
-			topLine.hide(), bottomLine.hide();					
-			solver.setAlpha(20);
-			airfoil.setAlpha(20,function(){
-				neg = 1; topLine.show(), bottomLine.show();
-				topLine.attr("path","M-5,103l205,0.5c16.473,0,18.622-10.636,43-6.875c32.583,5.027,276.084,27.374,378.667-6.625");
-				bottomLine.attr("path","M-5,115.5h201.189c19.311,0,143.463,65,213.811,65h211.667");
-				topLine.translate(200,150).scale(2.5).attr({stroke:"#66d"});
-				bottomLine.translate(220,183).scale(2.5).attr({stroke:"#d66"});					
-			});
+				topLine.hide(), bottomLine.hide();					
+				solver.setAlpha(20);
+				airfoil.setAlpha(20,function(){
+					neg = 1; topLine.show(), bottomLine.show();
+					topLine.attr("path","M-5,103l205,0.5c16.473,0,18.622-10.636,43-6.875c32.583,5.027,276.084,27.374,378.667-6.625");
+					bottomLine.attr("path","M-5,115.5h201.189c19.311,0,143.463,65,213.811,65h211.667");
+					topLine.translate(200,150).scale(2.5).attr({stroke:"#66d"});
+					bottomLine.translate(220,183).scale(2.5).attr({stroke:"#d66"});					
+				});
 		}
 
 		function endSolver(){				
@@ -243,6 +244,11 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 	//****	Flying with centered aircraft
 	//******************************************************************************/	
 	function Scene4(){
+		var 	
+			g = 9.81,
+			d2r = Math.PI/180,
+			r2d = 180/Math.PI;
+
 		var i = 0;
 		dynamics.setElevatorAngle(0);
 		dynamics.setThrottle(0.5);
@@ -349,8 +355,8 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 					salpha = sin(ralpha);					
 				var newX = 130 * calpha + 40 * salpha;
 				var newY = 130 * salpha - 40 * calpha;
-				var newTX = 70 * cos(ralpha+rangle);
-				var newTY = 70 * sin(ralpha+rangle);
+				var newTX =  70 * cos(ralpha+rangle);
+				var newTY =  70 * sin(ralpha+rangle);
 				
 				newTX += (newX );
 				newTY += (newY );
@@ -440,7 +446,7 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 	
 	/** External function called when airfoil moves*/
 	function OnAirfoilMoved(angle){}
-
+	
 	/** Draw a lift arrow */
 	function LiftArrow(paper){
 		var magnitude=0, gw = gameW*0.5, gh = gameH*0.5;

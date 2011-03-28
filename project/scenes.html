@@ -37,17 +37,17 @@
 		</style>
 		<script type="text/javascript" src="js/raphael.min.js"></script>
 		<script type="text/javascript" src="js/raphael.slider.js"></script> 
-		<script type="text/javascript" src="js/wing.js"></script>
-		<script type="text/javascript" src="js/aircraft.js"></script>
 		<script type="text/javascript" src="js/clouds.js"></script> 
-		<script type="text/javascript" src="js/scenes.js"></script>
+		<script type="text/javascript" src="js/scenes.js"></script>		
 		<script type="text/javascript" src="js/controls.js"></script>
+		<script type="text/javascript" src="js/aircraftDisplay.js"></script>
 		<script type="text/javascript" src="js/flow/display.js"></script>
 		<script type="text/javascript">
 			window.onload= function(){
 			
+				var spitfire = AircraftDisplay();
 				var solver = FlowSolverDisplay("flowPanel");
-				Scenes("frontPanel","gamePanel",solver,spitfire);
+				Scenes("frontPanel","gamePanel",solver, spitfire);
 				
 				window.onkeydown=function(e){
 					switch(e.keyCode){

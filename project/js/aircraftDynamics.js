@@ -3,7 +3,7 @@ function AircraftDisplay(containerId, width, height){
 	var y0 = 250;	
 	var paper = Raphael(containerId,width,height);	
 	var clouds = CloudsDisplay(paper,980,600);
-	var planePic = paper.image("../images/plane1.png",x0,y0,98*2,30*2);
+	var planePic = paper.image("images/plane1.png",x0,y0,98*2,30*2);
 	var plane = spitfire;
 	plane.setState(100, 0, 0, 5, 5, 0, 0)
 	plane.setElevatorAngle(-5);
