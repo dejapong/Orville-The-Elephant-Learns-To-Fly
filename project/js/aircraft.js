@@ -187,7 +187,7 @@ self.onmessage = function(e){
 				self.postMessage({mesg:"elevatorAngle", elevatorAngle:spitfire.getElevatorAngle()});
 				break;
 			case "changeThrottle":
-				spitfire.changeElevatorAngle(e.data.throttle);			
+				spitfire.changeThrottle(e.data.throttle);			
 				self.postMessage({mesg:"throttle",throttle:spitfire.getThrottle()});
 				break;
 			case "setState":

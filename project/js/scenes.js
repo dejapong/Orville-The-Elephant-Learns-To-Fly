@@ -254,7 +254,8 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 		dynamics.setThrottle(0.5);
 		dynamics.setState(100, 0, 0, 5, 5, 0, 0);
 		function dynamicsTick(){
-			var state = dynamics.tick(0.1);
+		
+			var state = dynamics.tick(0.075);
 			var speed = state[0];
 			var gamma = r2d*state[1];		
 			var theta = r2d*state[4];
