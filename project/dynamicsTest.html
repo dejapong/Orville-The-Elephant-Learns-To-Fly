@@ -1,0 +1,46 @@
+<html>
+	<head>
+		<style type="text/css">
+			body{
+				background:-webkit-gradient(linear, left top, left bottom, from(#4bf), to(#ced));
+			}
+		</style>
+	</head>
+	<body>
+		<div id=container>
+		</div>
+		<script type="text/javascript" src="js/raphael.min.js"></script>
+		<script type="text/javascript" src="js/clouds.js"></script>
+		<script type="text/javascript" src="js/controls.js"></script>
+		<script type="text/javascript" src="js/aircraft.js"></script> 
+		<script type="text/javascript" src="js/aircraftDynamics.js"></script> 
+		<script type="text/javascript">
+			window.onload= function(){
+				airplane = AircraftDisplay("container",980,500);
+			}
+			window.onclick=function(){
+				airplane.tick();
+			}
+			window.onkeydown=function(e){
+				switch(e.keyCode){
+					case 38:
+						airplane.changeElevatorAngle(0.25);
+						console.log(airplane.getElevatorAngle());
+						break;
+					case 40:
+						airplane.changeElevatorAngle(-0.25);
+						console.log(airplane.getElevatorAngle());											
+						break;
+					case 81:
+						airplane.changeThrottle(0.05);
+						console.log(airplane.getThrottle());
+						break;
+					case 65:
+						airplane.changeThrottle(-0.05);
+						console.log(airplane.getThrottle());						
+						break;						
+				}
+			}
+		</script>
+	</body>
+</html>
