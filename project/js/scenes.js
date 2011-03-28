@@ -1,4 +1,4 @@
-function Scenes(frontId,backId,flowSolver){
+function Scenes(frontId,backId,flowSolver,dynamics){
 	var gameW = 980, 
 		gameH = 600,
 		gw = gameW*0.5, 
@@ -8,39 +8,39 @@ function Scenes(frontId,backId,flowSolver){
 		dialogStyle = {	"fill":"#fff","font-size":20,
 						"font-family":"CrimeFighter BB"},
 		messageBox, 
-		draggable = true; 
+		draggable = true,
+		renderLoop, renderMethods = {}; 
 	
 	var front = Raphael(frontId,gameW,gameH),
 		back = Raphael(backId,gameW,gameH),
 		sky = back.rect(0,0,gameW,gameH).attr({fill:"90-#13354a-#132149"}).toBack(),
+		aircraft = AircraftDisplay(),		
 		airfoil = AirfoilDisplay(), 
-		aircraft = AircraftDisplay(),
 		solver = SolverDisplay(),
 		clouds = CloudsDisplay(back,gameW,gameH), linkage; 
-
-		
-	
+	//airfoil.fadeShow();
 	//******************************************************************************
 	//****	KickOff 
 	//****	Open with tile text and fly it away, kicking off scene two
 	//******************************************************************************/
 	(function(){
 		var titleText = ["Orville","the","Elephant","\nLearns","How","to","Fly"], 
-			textSet = back.set();
+			textSet = back.set(),
+			buttonSet = front.set();
 			
 		clouds.setSpeed(90);
-		
+		renderMethods["clouds"] = clouds.tick;
 		drawIntro();
 		
 		function drawIntro(){ 
 			textSet.push(back.image("images/logo.png",220,-100,520,75)
-				.animate({"y":gh-120},1000,"bounce",function(){
+				.animate({"y":gh-220},1000,"bounce",function(){
 					setTimeout(drawTitle,1000);
 			}));
 		}
 		
 		function drawTitle(){
-			var title = back.text(gameW/2,gh+50,"")
+			var title = back.text(gameW/2,gh-30,"")
 				.attr({	"fill":"#fff","font-size":52,
 						"font-weight":"bold","stroke-width":2,stroke:"#000",
 						"font-family":"Arfmoochikncheez"});
@@ -52,22 +52,71 @@ function Scenes(frontId,backId,flowSolver){
 					titleSoFar +=" "+titleText[i];
 					title.attr({"text":titleSoFar});
 					if (++i >= titleText.length){
-						setTimeout(blowAwayIntro,1400);
+						drawOptionButtons();
 					}
 					else drawNextWord();
 				},200)
 			}
 		}
 		
-		function blowAwayIntro(){
-			Scene1();
-			textSet.animate({"x":-980},1000,">",function(){
-				textSet.remove();
-			});
+		function drawOptionButtons(){
+			var optionButtonStyle = {
+				"fill":"#fff","stroke":"#a60",
+				"font-size":25,
+				"font-family":"Arfmoochikncheez",
+				"cursor":"pointer"
+			};
+			var optionButtonFaceStyle={"fill":"#fa0", "cursor":"pointer"}			
+			buttonSet.push(front.rect(170,gh+85,200,50,4).attr(optionButtonFaceStyle)
+					.click(startFlightSchool))
+				.push(front.rect(390,gh+85,200,50,4).attr(optionButtonFaceStyle)
+					.click(startFreeFlight))
+				.push(front.rect(610,gh+85,200,50,4).attr(optionButtonFaceStyle)
+					.click(startWindTunnel))
+				.push(front.text(270,gh+112,"Flight School").attr(optionButtonStyle)
+					.click(startFlightSchool))
+				.push(front.text(490,gh+112,"Free Flight").attr(optionButtonStyle)
+					.click(startFreeFlight))
+				.push(front.text(710,gh+112,"Wind Tunnel").attr(optionButtonStyle)
+					.click(startWindTunnel));
 		}
 		
+		function blowAwayIntro(){
+			textSet.animate({"x":-980},1000,">",textSet.hide);
+			buttonSet.animate({"x":-980},1000,">",buttonSet.hide);
+		}
+		function startWindTunnel(){
+			Scene2();
+			clouds.fadeHide(function(){delete renderMethods.clouds});
+			blowAwayIntro();
+		}
+		
+		function startFlightSchool(){
+			Scene1();
+			blowAwayIntro();
+		}
+		
+		function startFreeFlight(){
+			Scene4();
+			aircraft.fadeShow();
+			aircraft.scale(0.5);
+			aircraft.fadeOutFront();
+			blowAwayIntro();
+		}		
+		renderLoop = setInterval(function(){
+			for (r in renderMethods){
+				renderMethods[r](); 
+			}
+		},30);
 	})();
 	
+	/*
+	aircraft.fadeShow();
+	aircraft.scale(0.5);
+	aircraft.fadeOutFront();
+	Scene4()
+	
+
 	//******************************************************************************
 	//****	SCENE1 
 	//****	aircraft flies in. orville reaches for controls and fails
@@ -95,7 +144,7 @@ function Scenes(frontId,backId,flowSolver){
 		function endScene(){
 			setTimeout(function(){					
 				aircraft.fadeHide(function(){});			
-				clouds.fadeHide();
+				clouds.fadeHide(function(){delete renderMethods["clouds"]});
 				dialog.attr("text", "Air over the wings creates an upward force");
 				Scene2();
 			},2000);
@@ -196,37 +245,44 @@ function Scenes(frontId,backId,flowSolver){
 			topLine.remove(); bottomLine.remove(); streamLines.remove();
 			solver.fadeHide();
 			airfoil.setAlpha(0,function(){
-			var aircraft = AircraftDisplay();
 				aircraft.fadeShow();
+				aircraft.scale(0.5);
 				solver.fadeHide();
 				clouds.fadeShow();
 				airfoil.scaleHide();
+				renderMethods["clouds"] = clouds.tick;
 				messageBox.hide(function(){}); 
 				Scene4();
 			});
 		}
-	}//end stalls
+	} //end stalls
 	
+	//******************************************************************************
+	//****	SCENE4 
+	//****	Flying with centered aircraft
+	//******************************************************************************/	
 	function Scene4(){
-		aircraft.rotate(10,true);
-		var i = 0;
-		var plane = spitfire;
-		plane.setElevatorAngle(0);
-		plane.setThrottle(0.5);
-		plane.setState(100, 0, 0, 5, 5, 0, 0);
+		var 	
+			g = 9.81,
+			d2r = Math.PI/180,
+			r2d = 180/Math.PI;
 
+		var i = 0;
+		dynamics.setElevatorAngle(0);
+		dynamics.setThrottle(0.5);
+		dynamics.setState(100, 0, 0, 5, 5, 0, 0);
+		function dynamicsTick(){
 		
-		var inter = setInterval(function(){
-			var state = plane.tick(0.05);
+			var state = dynamics.tick(0.05);
 			var speed = state[0];
 			var gamma = r2d*state[1];		
 			var theta = r2d*state[4];
-			aircraft.rotate(theta, true);
+			aircraft.rotate(theta);
+			aircraft.changeElevator(dynamics.getElevatorAngle());
 			clouds.setAngle(gamma);
 			clouds.setSpeed(speed);
-			i++;
-			if (i>13000) clearInterval(inter);
-		},10);
+		}
+		renderMethods["dynamics"] = dynamicsTick; 
 	}
 	
 	/** 
@@ -235,20 +291,25 @@ function Scenes(frontId,backId,flowSolver){
 		show lift arrows
 	*/
 	function AircraftDisplay(){
-		var aircraftSet = back.set();
-		var startX = 100; 
-		var startY = 110; 
-		var endX = 840;
-		var scale = 1; 
-		var aircraftBack = back.image("images/plane1.png",startX,startY,780,250);
-		var orville = back.image("images/orvilleSeated.png",startX + 280,startY+63,137,142);
-		var orvillesEye = back.circle(startX + 347,201,3).attr({fill:"#000"});
-		var orvillesArm =  back.image("images/orvillesArm.png",startX + 346,startY + 135,30,28);
-		linkage = new Linkage(front,{stickPivotX:390,stickPivotY:305,elevPivotX:750,elevPivotY:250,elevChord:130});
-		var aircraftFront = front.image("images/plane1solid.png",startX,startY,780,250);		
-		aircraftSet.push(aircraftFront,aircraftBack,orville,orvillesEye,orvillesArm,linkage)
+		var aircraftSet = back.set(),
+			startX = 100,
+			startY = 110,
+			endX = 840,
+			scale = 1,
+			alpha = 0, 
+			aircraftBack = back.image("images/plane1.png",startX,startY,780,250),
+			orville = back.image("images/orvilleSeated.png",startX + 280,startY+63,137,142),
+			orvillesEye = back.circle(startX + 347,201,3).attr({fill:"#000"}),
+			orvillesArm =  back.image("images/orvillesArm.png",startX + 346,startY + 135,30,28),
+			aircraftFront = front.image("images/plane1solid.png",startX,startY,780,250),
+			eX = 750, eY = 220, eL =130, tt = 5,
+			elevatorPath = front.path(
+				"M"+eX+","+eY+"L"+(eX+eL)+","+eY
+			).attr({stroke:"#0f0","stroke-width":3,"opacity":0})
+		
+		aircraftSet.push(aircraftFront,aircraftBack,orville,orvillesEye,orvillesArm)
 			.attr("opacity",0);
- 		
+		var eox=0, eoy=0;
 		return {
 			flyIn:function(callback){
 				aircraftSet.translate(endX, 0);
@@ -282,9 +343,11 @@ function Scenes(frontId,backId,flowSolver){
 				});
 			},
 			fadeShow:function(callback){
-				aircraftFront.remove();
-				aircraftSet.animate({opacity:1},1000);
-				if (callback) callback();
+				aircraftSet.show().toFront();
+				aircraftSet.animate({opacity:1},1000,function(){
+					if (callback) callback();
+				});
+				elevatorPath.animate({opacity:1},1000);
 			},
 			getLEX:function(){
 				return startX-230; 
@@ -297,8 +360,33 @@ function Scenes(frontId,backId,flowSolver){
 				aircraftSet.toFront();
 				aircraftFront.toFront();
 			},
-			rotate:function(angle,absolute){
+			rotate:function(angle){
+				alpha = angle;  
 				aircraftSet.rotate(angle,gw,gh);
+			},
+			changeElevator:function(angle){
+				xloc = (eX+gw) * scale;
+				yloc = (eY+gh) * scale; 
+				var rangle =  0.01745*(angle),
+					ralpha =  0.01745*(alpha),
+					cos = Math.cos, sin = Math.sin,
+					calpha = cos(ralpha),
+					salpha = sin(ralpha);					
+				var newX = 130 * calpha + 40 * salpha;
+				var newY = 130 * salpha - 40 * calpha;
+				var newTX =  70 * cos(ralpha+rangle);
+				var newTY =  70 * sin(ralpha+rangle);
+				
+				newTX += (newX );
+				newTY += (newY );
+				elevatorPath.attr("path",
+					"M"+(newX+gw)+","+(newY+gh)
+					+"L"+(newTX+gw)+","+(newTY+gh));
+			},
+			scale:function(_scale){
+				scale = _scale;
+				aircraftSet.animate({"scale":_scale + " " + _scale + " "+gw+" "+ gh},1000);
+				elevatorPath.animate({"scale":_scale + " " + _scale + " "+gw+" "+ gh},1000);
 			}
 		}
 	}
@@ -314,11 +402,13 @@ function Scenes(frontId,backId,flowSolver){
 			.scale(1.1)
 			.drag(move,start,stop)
 			.attr("opacity",0);
-		function start(){ 
+
+		function start(){  
 			this.startX = this._drag.x - this.paper.canvas.offsetParent.offsetLeft; 
 			this.startY = this._drag.y - this.paper.canvas.offsetParent.offsetTop; 
 			(this.startX < 490) ? this.reverse = true : this.reverse = false; 
 		};
+		
 		function move(dx,dy){
 			if (!draggable) return; 
 			var x = this.startX +dx,
@@ -329,14 +419,14 @@ function Scenes(frontId,backId,flowSolver){
 			_airfoil.rotate(angle,485,gh);
 			OnAirfoilMoved(angle);
 		}
-		function stop(){} 				
+		
+		function stop(){}		
 
 		return{
 			fadeShow:function(){
 				_airfoil.animate({opacity:1});
 			},
 			scaleShow:function(){
-				var aircraft = AircraftDisplay(); 
 				_airfoil.translate(aircraft.getLEX(),aircraft.getLEZ())
 				.attr("opacity",1)
 				.animate({scale:1.5,"translation":130 + " " + -3},1000);
@@ -427,4 +517,9 @@ function Scenes(frontId,backId,flowSolver){
 		});
 	}
 	
+	return {
+		changeElevatorAngle:function(angle){
+			
+		}
+	}
 }

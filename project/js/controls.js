@@ -35,7 +35,7 @@ function Linkage(paper, options){
 		handle = paper.rect(sX-5,sY-sL,10,30,3);
 
 	//Control Stick
-	stickSet = paper.set();
+	var stickSet = paper.set();
 	stickSet.push(stick,handle,stickHub);
 	stick.attr(metalPart);
 	stickHub.attr(metalPart);
@@ -55,10 +55,10 @@ function Linkage(paper, options){
 	elevator.attr(skin);
 	hornHub.attr(skin);
 	horn.attr(metalPart);
-	elevatorSet = paper.set(); 
+	var elevatorSet = paper.set(); 
 	elevatorSet.push(horn,elevator,hornHub);
 	elevatorSet.drag(move, startE, upE);
-	
+
 	//Arm
 	var arm = paper.path("M" + sX + " " + (sY-sJ) + "L" + eX + " " + eY );
 	arm.attr({"stroke-width":3,"stroke":"#999"});
@@ -75,20 +75,24 @@ function Linkage(paper, options){
 		var angle = Raphael.angle(oX,oY,x,y)-90;    
 		if (!onStick) angle = angle * -1 + 90;
 		if (angle > o.minAngle && angle < o.maxAngle){
-			var radAngle = angle * Math.PI/180; 
-			stickSet.rotate(angle,sX,sY);
-			elevatorSet.rotate(-angle/2,eX,eY-eL);
-			var sJX = sX + sJ * Math.sin(radAngle);
-			var sJY = sY - sJ * Math.cos(radAngle);
-			var eJX = eX - eL * Math.sin(-radAngle/2);
-			var eJY = (eY-eL) + eL * Math.cos(-radAngle/2);
-			arm.attr("path","M" + sJX + " " + sJY + "L" + eJX + " " + eJY);
+			rotateStick(angle);
 		}
 	};
 	
+	function rotateStick(angle){
+		var radAngle = angle * Math.PI/180; 
+		stickSet.rotate(angle,sX,sY);
+		elevatorSet.rotate(-angle/2,eX,eY-eL);
+		var sJX = sX + sJ * Math.sin(radAngle);
+		var sJY = sY - sJ * Math.cos(radAngle);
+		var eJX = eX - eL * Math.sin(-radAngle/2);
+		var eJY = (eY-eL) + eL * Math.cos(-radAngle/2);
+		arm.attr("path","M" + sJX + " " + sJY + "L" + eJX + " " + eJY);
+	}
+	
+	
 	function startS(){  
 		onStick = true;
-		console.log(this);
 		this.startX = this._drag.x - this.paper.canvas.offsetParent.offsetLeft; 
 		this.startY = this._drag.y - this.paper.canvas.offsetParent.offsetTop;  
 	};
@@ -100,5 +104,11 @@ function Linkage(paper, options){
 	function upS(){};
 	function upE(){};	
 	
-	return linkageSet;
+	return {
+		setElevatorAngle:function(angle){
+			rotateStick(angle);
+		},
+		element:linkageSet
+		
+	};
 }

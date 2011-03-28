@@ -1,3 +1,52 @@
+Wing = function(args){
+	
+ 	var 
+ 		sref = args.sref, 
+ 		ar = args.ar, 
+ 		cl0 = args.cl0, 
+ 		clalpha = args.clalpha, 
+ 		clmax = args.clmax, 
+ 		cmac = args.cmac, 
+ 		cd0 = args.cd0, 
+ 		e = args.e;
+	var alpha = 0;
+	var K = 1/(Math.PI*ar*e);
+	var cbar = Math.sqrt(sref/ar);
+	
+	return {
+		setAlpha:function(value){
+			alpha = value;
+		},
+		getAlpha:function(){
+			return alpha; 
+		},
+		getCl:function(){
+			cl = cl0 + clalpha*alpha;			
+			if (cl > clmax) {
+				cl = cl0 + 0.25*clalpha*alpha;
+			}
+			else if (cl < -clmax) {
+				cl += cl0 + 0.25*clalpha*alpha;
+			}
+			return cl;
+		},
+		getCd:function(){
+			cl = cl0 + clalpha*alpha;	
+			cd = cd0 + K*cl*cl;
+			return cd;
+		},
+		getCm:function(){
+			return cmac;
+		},
+		getSref:function(){
+			return sref;
+		},
+		getCref:function(){
+			return cbar;
+		}
+	}
+}
+
 Aircraft = function(args){
 
 	g = 9.81,
@@ -83,8 +132,7 @@ Aircraft = function(args){
 		},
 		setThrottle:setThrottle,
 		setElevatorAngle:setElevatorAngle,		
-		changeElevatorAngle:function(delta){		
-			console.log(this);
+		changeElevatorAngle:function(delta){	 
 			setElevatorAngle(elevatorAngle+delta);
 		},
 		changeThrottle:function(delta){
@@ -126,4 +174,37 @@ Aircraft = function(args){
 
 var spitfireWing = new Wing({sref:22.5, ar:6, cl0: 0.2, clalpha: 0.1, clmax: 1.6, cmac: -0.1, cd0: 0.01, e:0.9});
 var spitfireTail = new Wing({sref:4.0, ar:3, cl0: 0, clalpha: 0.05, clmax: 1.2, cmac: 0.0, cd0: 0.025, e:0.8});
-spitfire = new Aircraft({wing: spitfireWing, tail: spitfireTail, xwing: 2.5, ywing: 0, xtail: 7.7, ytail: 0.5, xcg: 2.8, m: 2900, Iyy: 150000, maxT: 8000, dynPress: 6125});
+spitfire = new Aircraft({wing: spitfireWing, tail: spitfireTail, xwing: 2.5, ywing: 0, xtail: 7.7, ytail: 0.5, xcg: 2.8, m: 2900, Iyy: 100000, maxT: 11000, dynPress: 6125});
+
+self.onmessage = function(e){
+		switch(e.data.cmd){
+			case "tick":
+				var state = spitfire.tick(e.data.dt);
+				self.postMessage({mesg:"ticked",state:state});
+				break;
+			case "changeElevatorAngle":
+				spitfire.changeElevatorAngle(e.data.elevatorAngle);
+				de = spitfire.getElevatorAngle();
+				self.postMessage({mesg:"elevatorAngle", elevatorAngle:de});
+				break;
+			case "changeThrottle":
+				spitfire.changeElevatorAngle(e.data.throttle);
+				dth = spitfire.getThrottle();
+				self.postMessage({mesg:"throttle",throttle:dth});
+				break;
+			case "setState":
+				spitfire.setState(e.data.speed0, e.data.gamma0, e.data.q0, e.data.alpha0, e.data.theta0, e.data.x0, e.data.z0)
+				self.postMessage({mesg:"inited"});				
+				break;
+			case "setElevatorAngle":
+				spitfire.setElevatorAngle(e.data.elevatorAngle);
+				de = spitfire.getElevatorAngle();				
+				self.postMessage({mesg:"elevatorAngle", elevatorAngle:de});			
+				break;
+			case "setThrottle":
+				spitfire.setThrottle(e.data.throttle);
+				dth = spitfire.getThrottle();				
+				self.postMessage({mesg:"throttle", throttle:dth});						
+				break;
+		}
+}
