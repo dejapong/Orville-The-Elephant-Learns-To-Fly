@@ -5,8 +5,7 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 		gh = gameH*0.5,
 		greenAirfoil = {stroke:"#4a4",fill:"#006838","stroke-width":3},
 		redAirfoil = {stroke:"#a44",fill:"#680038","stroke-width":3},
-		dialogStyle = {	"fill":"#fff","font-size":20,
-						"font-family":"CrimeFighter BB"},
+ 
 		messageBox, 
 		draggable = true,
 		renderLoop, renderMethods = {}; 
@@ -17,6 +16,10 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 		aircraft = AircraftDisplay(),		
 		airfoil = AirfoilDisplay(), 
 		solver = SolverDisplay(),
+		dialog = front.text(gw,480,"").attr({"cursor":"pointer",
+											"fill":"#fff",
+											"font-size":20,
+											"font-family":"CrimeFighter BB"}),
 		clouds = CloudsDisplay(back,gameW,gameH), linkage; 
 	//airfoil.fadeShow();
 	//******************************************************************************
@@ -122,31 +125,27 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 	//******************************************************************************/
 	function Scene1(){
 		back.image("images/controlTower.png",10,450,150,150);
-		var dialog = back.text(gw,480,"Orville... is that you?").attr(dialogStyle);
+		Dialog("Orville... is that you?");
 		aircraft.toFront();
 		aircraft.flyIn(function(){
 		aircraft.lookAtUser(function(){
 		aircraft.fadeOutFront(startDialog);});});
 		function startDialog(){
-			dialog.attr("text","What are you doing! you are an elephant, \n"
-							+"you can't fly! \nYou can't even reach the controls!");
-			setTimeout(tryReaching,2000);
+			Dialog("What are you doing! you are an elephant, \n"
+					+"you can't fly! \nYou can't even reach the controls!",3000,tryReaching);
 			//end fade out front
 		}	
 		function tryReaching(){
 			aircraft.tryReaching(function(){
-				dialog.attr("text","Dont' worry, We'll get you down, \n"
-						+"First, I'll have to explain a few things.\n Listen carefully.");				
-				endScene(); 
+				Dialog("Dont' worry, We'll get you down, \n"
+						+"First, I'll have to explain a few things.\n Listen carefully."
+					,3000,endScene);
 			});
 		}
 		function endScene(){
-			setTimeout(function(){					
-				aircraft.fadeHide(function(){});			
-				clouds.fadeHide(function(){delete renderMethods["clouds"]});
-				dialog.attr("text", "Air over the wings creates an upward force");
-				Scene2();
-			},2000);
+			aircraft.fadeHide(function(){});			
+			clouds.fadeHide(function(){delete renderMethods["clouds"]});
+			Scene2();
 		}
 	}
 	
@@ -157,33 +156,24 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 	function Scene2(){
 		airfoil.scaleShow();
 		solver.start();	
-		setTimeout(textPane1,1000);
+		textPane1();
 		function textPane1(){
-			messageBox = PopUp(front,
-				"Air is all around us. More text about pressure and shear forces, on some level.",
-				textPane2);
+			Dialog("Air is all around us..",
+				10000, textPane2);
 		}	
 		function textPane2(){ 
-			messageBox.hide(function(){		
-				messageBox = PopUp(front,
-					"More text about the air and educational stuff. Talk about Lift, drag and stalls",
-					textPane3);
-			});
+			Dialog("Air pressure creates ...",
+				10000,textPane3);
 		}
 		function textPane3(){ 
-			var liftArrow = new LiftArrow(front),
+			//no lift arrows for now
+			/*var liftArrow = new LiftArrow(front),
 				dragArrow = new DragArrow(front); 
 			OnAirfoilMoved = function(angle){
 				liftArrow.setValue(angle);
 				dragArrow.setValue(angle);
-			}
-			messageBox.hide(function(){
-				setTimeout(function(){
-					messageBox = PopUp(front,
-					"When you're ready, click ok to learn about stalls",
-					Scene3);
-				},2000);
-			});
+			}*/
+			messageBox = Dialog("When you're ready, click here to learn about stalls",-1, Scene3);
 		}
 	}
 	
@@ -198,11 +188,7 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 		//rotate, then draw
 		airfoil.turnRed(DrawAttached);
 		//show box to move on
-		messageBox.hide(function(){
-			messageBox = PopUp(front,
-				"You can see attached flow here",
-				DrawSeparated);		
-		});
+		Dialog("You can see attached flow here",10000,DrawSeparated);		
 		solver.setAlpha(0);
 				
 		function DrawAttached(){
@@ -222,20 +208,16 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 			streamLines.attr({"stroke-width":6});
 		}
 
-		function DrawSeparated(){
-			messageBox.hide(function(){
-				messageBox = PopUp(front,
-					"You can see separated flow here",
-				endSolver);
-				topLine.hide(), bottomLine.hide();					
-				solver.setAlpha(20);
-				airfoil.setAlpha(20,function(){
-					neg = 1; topLine.show(), bottomLine.show();
-					topLine.attr("path","M-5,103l205,0.5c16.473,0,18.622-10.636,43-6.875c32.583,5.027,276.084,27.374,378.667-6.625");
-					bottomLine.attr("path","M-5,115.5h201.189c19.311,0,143.463,65,213.811,65h211.667");
-					topLine.translate(200,150).scale(2.5).attr({stroke:"#66d"});
-					bottomLine.translate(220,183).scale(2.5).attr({stroke:"#d66"});					
-				});
+		function DrawSeparated(){			
+			Dialog("You can see separated flow here",10000,endSolver);
+			topLine.hide(), bottomLine.hide();					
+			solver.setAlpha(20);
+			airfoil.setAlpha(20,function(){
+				neg = 1; topLine.show(), bottomLine.show();
+				topLine.attr("path","M-5,103l205,0.5c16.473,0,18.622-10.636,43-6.875c32.583,5.027,276.084,27.374,378.667-6.625");
+				bottomLine.attr("path","M-5,115.5h201.189c19.311,0,143.463,65,213.811,65h211.667");
+				topLine.translate(200,150).scale(2.5).attr({stroke:"#66d"});
+				bottomLine.translate(220,183).scale(2.5).attr({stroke:"#d66"});					
 			});
 		}
 
@@ -250,7 +232,7 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 				clouds.fadeShow();
 				airfoil.scaleHide();
 				renderMethods["clouds"] = clouds.tick;
-				messageBox.hide(function(){}); 
+				Dialog("Help Orville fly by using the up and down \narrow keys to move the elevator");
 				Scene4();
 			});
 		}
@@ -266,7 +248,7 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 		dynamics.setThrottle(0.5);
 		dynamics.setState(100, 0, 0, 5, 5, 0, 0);
 		function dynamicsTick(){
-			var state = dynamics.tick(0.05);
+			var state = dynamics.tick(0.1);
 			var speed = state[0];
 			var gamma = r2d*state[1];		
 			var theta = r2d*state[4];
@@ -367,8 +349,8 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 					salpha = sin(ralpha);					
 				var newX = 130 * calpha + 40 * salpha;
 				var newY = 130 * salpha - 40 * calpha;
-				var newTX =  70 * cos(ralpha+rangle);
-				var newTY =  70 * sin(ralpha+rangle);
+				var newTX = 70 * cos(ralpha+rangle);
+				var newTY = 70 * sin(ralpha+rangle);
 				
 				newTX += (newX );
 				newTY += (newY );
@@ -458,28 +440,7 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 	
 	/** External function called when airfoil moves*/
 	function OnAirfoilMoved(angle){}
-	
-	/** Pop up a message from the bottom of the screen */
-	function PopUp(paper,msg,callback){
-		var message = paper.set(),
-			box = paper.rect(0,gameH,gameW,100,10),
-			text = paper.text(gameW/2,gameH+20,msg).attr({"font-size":20});
-		message.push(box).push(text); 
-		box.animate({y:gameH-100},600,">");
-		text.animate({y:gameH-80},600,">",function(){
-			message.push(paper.rect(gameW/2-50,gameH-30,100,20,5).click(callback).attr({"cursor":"pointer","fill":"#fa3"}));
-			message.push(paper.text(gameW/2,gameH-20,"Ok").attr({"font-size":20,"cursor":"pointer"}).click(callback));
-		});
-		box.attr({fill:"#fff",opacity:0.5}); 
-		var hide = function(callback){
-			message.animate({y:gameH+50},600,"<",function(){
-				message.remove();
-				callback();
-			});
-		}
-		return{hide:hide}
-	}
-	
+
 	/** Draw a lift arrow */
 	function LiftArrow(paper){
 		var magnitude=0, gw = gameW*0.5, gh = gameH*0.5;
@@ -508,6 +469,20 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 			elevPivotX:770, elevPivotY:275, hornLength:30, elevChord:150, elevThickness:7,
 			minAngle:-40, maxAngle:40
 		});
+	}
+	
+	/** Display a dialog message, call the callback on click or timeout, whichever is first*/
+	function Dialog(msg,delay,callback){
+		dialog.attr("text",msg);
+		if (callback){
+			if (delay > 0) var timeout = setTimeout(click,delay);
+			dialog.click(click);
+			function click(){
+			 	if (timeout) clearTimeout(timeout);
+				dialog.unclick(click);
+				callback();
+			}
+		}
 	}
 	
 	return {
