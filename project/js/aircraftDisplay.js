@@ -6,13 +6,11 @@ function AircraftDisplay(){
 	var state = [];
 	
 	worker.onmessage = function(e){
-		if (!e.data.mesg) console.log(e.data);
 		switch(e.data.mesg){
 			case "ticked":				
 				state = e.data.state;				
 				break;
 			case "elevatorAngle":
-				//console.log(e.data.elevatorAngle);
 				elevatorAngle = e.data.elevatorAngle;
 				break;
 			case "throttle":	
