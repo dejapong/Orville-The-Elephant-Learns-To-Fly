@@ -16,10 +16,10 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 		aircraft = AircraftDisplay(),		
 		airfoil = AirfoilDisplay(), 
 		solver = SolverDisplay(),
-		dialog = front.text(gw,480,"").attr({"cursor":"pointer",
+		dialog = front.text(gw,520,"").attr({"cursor":"pointer",
 											"fill":"#fff",
 											"font-size":20,
-											"font-family":"CrimeFighter BB"}),
+											"font-family":"Permanent Marker"}),
 		clouds = CloudsDisplay(back,gameW,gameH), linkage; 
 	//airfoil.fadeShow();
 	//******************************************************************************
@@ -46,7 +46,7 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 			var title = back.text(gameW/2,gh-30,"")
 				.attr({	"fill":"#fff","font-size":52,
 						"font-weight":"bold","stroke-width":2,stroke:"#000",
-						"font-family":"Arfmoochikncheez"});
+						"font-family":"Permanent Marker"});
 			textSet.push(title);
 			drawNextWord();
 			var titleSoFar = "", i = 0;
@@ -139,7 +139,7 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 		function tryReaching(){
 			aircraft.tryReaching(function(){
 				Dialog("Dont' worry, We'll get you down, \n"
-						+"First, I'll have to explain a few things.\n Listen carefully."
+						+"First you have to understand how planes fly.\n Listen carefully."
 					,3000,endScene);
 			});
 		}
@@ -159,12 +159,18 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 		solver.start();	
 		textPane1();
 		function textPane1(){
-			Dialog("Air is all around us..",
+			Dialog("As the air flows over your"
+			+"\nwing, its shape and angle"
+			+"\naffects the air around it."
+			+"\nDrag the airfoil to rotate it"
+			+"\nand see how the air flow changes.",
 				10000, textPane2);
 		}	
 		function textPane2(){ 
-			Dialog("Air pressure creates ...",
-				10000,textPane3);
+			Dialog("These changes move the air downward,\n"
+				+"pushing your plane up."
+				+"\nThis upward push is called \"lift\"",
+				15000,textPane3);
 		}
 		function textPane3(){ 
 			//no lift arrows for now
@@ -174,7 +180,7 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 				liftArrow.setValue(angle);
 				dragArrow.setValue(angle);
 			}*/
-			messageBox = Dialog("When you're ready, click here to learn about stalls",-1, Scene3);
+			messageBox = Dialog("When your're ready to move on, click here",-1, Scene3);
 			}
 		}
 	
@@ -189,7 +195,7 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 		//rotate, then draw
 		airfoil.turnRed(DrawAttached);
 		//show box to move on
-		Dialog("You can see attached flow here",10000,DrawSeparated);		
+		Dialog("At small angles, air moves \nalong the wing surface closely",10000,DrawSeparated);		
 		solver.setAlpha(0);
 				
 		function DrawAttached(){
@@ -210,7 +216,10 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 		}
 
 		function DrawSeparated(){
-			Dialog("You can see separated flow here",10000,endSolver);
+			Dialog("If the angle is too steep, "
+					+"\nthe air separates from the wing "
+					+"\nand you'll lose lift."
+					+"\nThis is called a \"stall\"",10000,endSolver);
 				topLine.hide(), bottomLine.hide();					
 				solver.setAlpha(20);
 				airfoil.setAlpha(20,function(){
@@ -233,7 +242,7 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 				clouds.fadeShow();
 				airfoil.scaleHide();
 				renderMethods["clouds"] = clouds.tick;
-				Dialog("Help Orville fly by using the up and down \narrow keys to move the elevator");
+				Dialog("Help Orville fly by using the up and down \narrow keys to move the elevator.\nTry not to Stall",5000,function(){Dialog("")});
 				Scene4();
 			});
 		}
