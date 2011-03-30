@@ -1,11 +1,11 @@
 function FlowSolverDisplay(canvasId){
-	var width =64; 
-	var height =64;
+	var width =98; 
+	var height =60;
 	var canvas = document.getElementById(canvasId),
 		ctx = canvas.getContext("2d"),
 		imageData = ctx.createImageData(width,height),
 		worker = new Worker("js/flow/solverWorker.js"),
-		globalAlpha = 405,
+		globalAlpha = 505,
 		solverInt; 
 		
 	canvas.width = width;

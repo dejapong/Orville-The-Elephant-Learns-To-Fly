@@ -29,41 +29,49 @@ function Solver(width,height){
 	*/
 	function diffuse(b, x, x0, diff, dt){
 		var a = dt * diff * internalW * internalH;
-		for (var k = 0; k < solverIterations; k++){
-			for(var i = 1; i < internalW; i++){
+		if (a==0){
+			for(var i = 1; i < internalW; i++)
 				for (var j = 1; j < internalH; j++){
-					var currentCell = ix(i, j); 
-					var prevCell = ix(i - 1, j); 
-					var nextCell = ix(i + 1, j); 
-					var topCell = ix(i, j - 1);
-					var bottomCell = ix(i, j + 1); 
-					x[currentCell] = (x0[currentCell] + a * (
-						x[prevCell] 
-						+ x[nextCell] 
-						+ x[topCell]
-						+ x[bottomCell])) / (1 + 4 * a);
-				} 
+					var currentCell = ix(i, j);
+					x[currentCell] = x0[currentCell];
+				}
+		}else{
+			for (var k = 0; k < solverIterations; k++){
+				for(var i = 1; i < internalW; i++){
+					for (var j = 1; j < internalH; j++){
+						var currentCell = ix(i, j); 
+						var prevCell = ix(i - 1, j); 
+						var nextCell = ix(i + 1, j); 
+						var topCell = ix(i, j - 1);
+						var bottomCell = ix(i, j + 1); 
+						x[currentCell] = (x0[currentCell] + a * (
+							x[prevCell] 
+							+ x[nextCell] 
+							+ x[topCell]
+							+ x[bottomCell])) / (1 + 4 * a);
+					} 
+				}
 			}
-			setBoundaryConditions(b,x); 
 		}	
+		setBoundaryConditions(b,x);
 	}
 	
 	/**
 		Set boundary conditions for container walls and airfoil shape
 	*/
 	function setBoundaryConditions(b, x){
-		
 		for(i=0;i<height;i++){
-			u[i*width+width] = speed;
+			u[i*width+width-1] = -speed;
+			//u[i*width + width -1] = -speed;
 			u[i*width] = speed;
-			u[i*width + 1] = speed;
-		}
+		}	
 		
 		for(i=0;i<width;i++){
-			u[i] = u[width+i];
-			v[i] = .2;
-			u[(size-width) + i] = u[(size-width*2) + i];
-			u[(size-width) + i] = 0;
+			u[i] = -u[i+width];//u[width+i];
+			v[i] = -v[i+width];
+			
+			u[(size-width) + i] = -u[(size-width) + i - width]
+			v[(size-width) + i] = -v[(size-width) + i - width]
 		}
 		
 		for (i =0 ; i < size; i++){
@@ -208,10 +216,10 @@ function Solver(width,height){
 	var internalH = height-2; 
 	var solverIterations = 20; 
 	var alpha = 0; //airfoil angle of attack 
-	var speed = 0.15; 
+	var speed = 0.06; 
 	var visc = 0.0;
 	var dens = 0.3; //input density
-	var rakeSpacing = 5; 
+	var rakeSpacing = 2; 
 	var rho =[], rhoPrev =[], u =[], v =[], uPrev = [], vPrev = [],walls =[];
 	for (var i=0; i < size; i++)
 		rho[i] = rhoPrev[i] = u[i] = v[i] = uPrev[i] = vPrev[i] = walls[i] = 0; 

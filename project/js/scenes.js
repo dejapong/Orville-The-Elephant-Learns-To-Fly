@@ -438,7 +438,7 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 		return {
 			start:function(){
 				flowSolver.start();
-				flowSolver.setAirfoil({t:.2,c:22,xOffset:32,yOffset:32});
+				flowSolver.setAirfoil({t:.1,c:30,xOffset:48,yOffset:30});
 			},
 			setAlpha:flowSolver.setAlpha,
 			fadeHide:flowSolver.fadeHide
