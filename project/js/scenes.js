@@ -66,7 +66,7 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 			var optionButtonStyle = {
 				"fill":"#fff","stroke":"#a60",
 				"font-size":25,
-				"font-family":"Arfmoochikncheez",
+				"font-family":"Permanent Marker",
 				"cursor":"pointer"
 			};
 			var optionButtonFaceStyle={"fill":"#fa0", "cursor":"pointer"}			
