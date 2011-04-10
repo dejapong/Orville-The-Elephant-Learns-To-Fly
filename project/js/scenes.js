@@ -132,8 +132,8 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 		aircraft.lookAtUser(function(){
 		aircraft.fadeOutFront(startDialog);});});
 		function startDialog(){
-			Dialog("What are you doing! you are an elephant, \n"
-					+"you can't fly! \nYou can't even reach the controls!",3000,tryReaching);
+			Dialog("What are you doing?\n You're an elephant, "
+					+"you can't fly!\nYou can't even reach the controls!",3000,tryReaching);
 			//end fade out front
 		}	
 		function tryReaching(){
@@ -161,16 +161,16 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 		function textPane1(){
 			Dialog("As the air flows over your"
 			+"\nwing, its shape and angle"
-			+"\naffects the air around it."
+			+"\naffect the air around it."
 			+"\nDrag the airfoil to rotate it"
 			+"\nand see how the air flow changes.",
 				10000, textPane2);
 		}	
 		function textPane2(){ 
-			Dialog("These changes move the air downward,\n"
-				+"pushing your plane up."
-				+"\nThis upward push is called \"lift\"",
-				15000,textPane3);
+			Dialog("As the wing bends the airflow one way,\n"
+				+"the air pushes the wing the other way."
+				+"\nThis is called \"lift\"",
+				15000,Scene3);				
 		}
 		function textPane3(){ 
 			//no lift arrows for now
@@ -242,8 +242,9 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 				clouds.fadeShow();
 				airfoil.scaleHide();
 				renderMethods["clouds"] = clouds.tick;
-				Dialog("Help Orville fly by using the up and down \narrow keys to move the elevator.\nTry not to Stall",5000,function(){Dialog("")});
-				Scene4();
+				Dialog("Help Orville fly! Use the up and down arrow keys to move the elevator.\nReady?",10000,function(){Dialog("");Scene4()});
+				//Dialog("Help Orville fly by using the up and down \narrow keys to move the elevator.\nTry not to Stall",5000,function(){Dialog("")});
+				//Scene4();
 			});
 		}
 	} //end stalls
