@@ -1,0 +1,7 @@
+To run this, you'll need to run it like this: 
+	http://localhost/orville/project/index.html
+
+Just launching index.html will result in a 
+security exception because this project uses
+Javascript Workers. 
+
