@@ -5,6 +5,7 @@ function CloudsDisplay(paper,gameW,gameH){
 	var u =0, v = 0;
 	var angle = 0;
 	var speed = 0;
+	var fixY = false; 
 	var cloud = paper.path("M73,106.5c0,15.2-0.711,29.5,72.25,29.5c0,8.844,85.75,11,109.75-7.5"
 				+"c30,12.5,81.5,2,81.5-13.5c0-19.898-23.034-36-51.5-36"
 				+"c0-8.567-15.431-15.5-34.5-15.5c0-11.331-34.887-20.5-78-20.5"
@@ -53,6 +54,7 @@ function CloudsDisplay(paper,gameW,gameH){
 				var cloud = clouds[i],
 				translation = cloud.attr("translation"),
 				speed = cloud.speed; 
+				if (fixY) v = 0; 
 				cloud.attr({"translation": u*speed + " " + v*speed});
 				if (translation.x > gameW+cloudWidth)
 					cloud.attr("translation",-(gameW+2*cloudWidth));		
@@ -66,7 +68,9 @@ function CloudsDisplay(paper,gameW,gameH){
 		},
 		setAngle:function(degrees){
 			angle = degrees;
-			//this.setSpeed(speed);
+		},
+		fixY:function(value){
+			fixY = value; 
 		}
 	}
 }

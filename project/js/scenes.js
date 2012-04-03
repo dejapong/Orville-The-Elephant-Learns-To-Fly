@@ -170,7 +170,7 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 			Dialog("As the wing bends the airflow one way,\n"
 				+"the air pushes the wing the other way."
 				+"\nThis is called \"lift\"",
-				15000,Scene3);				
+				15000,textPane3);				
 		}
 		function textPane3(){ 
 			//no lift arrows for now
@@ -181,8 +181,8 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 				dragArrow.setValue(angle);
 			}*/
 			messageBox = Dialog("When your're ready to move on, click here",-1, Scene3);
-			}
 		}
+	}
 	
 	//******************************************************************************
 	//****	SCENE3 
@@ -242,9 +242,7 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 				clouds.fadeShow();
 				airfoil.scaleHide();
 				renderMethods["clouds"] = clouds.tick;
-				Dialog("Help Orville fly! Use the up and down arrow keys to move the elevator.\nReady?",10000,function(){Dialog("");Scene4()});
-				//Dialog("Help Orville fly by using the up and down \narrow keys to move the elevator.\nTry not to Stall",5000,function(){Dialog("")});
-				//Scene4();
+				Dialog("Help Orville fly! Use the up and down arrow keys to move the elevator.\nReady?",1000,function(){Dialog("");Scene4()});
 			});
 		}
 	} //end stalls
@@ -274,7 +272,17 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 			clouds.setAngle(gamma);
 			clouds.setSpeed(speed);
 		}
-		renderMethods["dynamics"] = dynamicsTick; 
+		renderMethods["dynamics"] = dynamicsTick;
+		Dialog("Click here when you're ready to land",20000,Scene5);
+	}
+	
+	//******************************************************************************
+	//****	SCENE5 
+	//****	Landing part
+	//******************************************************************************/		
+	function Scene5(){
+		aircraft.scale(0.2);
+		clouds.fixY(true);
 	}
 	
 	/** 
