@@ -281,8 +281,9 @@ function Scenes(frontId,backId,flowSolver,dynamics){
 	//****	Landing part
 	//******************************************************************************/		
 	function Scene5(){
-		aircraft.scale(0.2);
-		clouds.fixY(true);
+		//NOT DONE YET
+		//aircraft.scale(0.2);
+		//clouds.fixY(true);
 	}
 	
 	/** 
